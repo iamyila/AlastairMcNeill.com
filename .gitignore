@@ -20,6 +20,7 @@
 .DS_Store
 *.pem
 Alastair_McNeill_Yila_Project_Production_CV_updated.docx
+/assets/project-sources/
 
 # debug
 npm-debug.log*
