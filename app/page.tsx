@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const projects = [
+  ['The Land We Knew the Best — Chris Eckman', 'https://images.zoogletools.com/s%3Abzglfiles/u/81538/a26f92bec16be7c752fdbd1174c4d6117c87a27e/original/chris-eckman-the-land-we-knew-the-best.jpg/%21%21/meta%3AeyJzcmNCdWNrZXQiOiJiemdsZmlsZXMifQ%3D%3D'],
+  ['Zhlehtet / Rok Zalokar', 'https://www.cd-cc.si/sites/default/files/styles/1920x600_hero/public/images/hero/Rok%20Zalokar_cover_2000x600_1.jpg?h=17dd8722&itok=MAVhimgN'],
   ['Dysfunctional Combinations and Collaborations, Vol. 2', 'https://alastairmcneill.com/assets/projects/1630251627_projects_4376_612baa6b13ff1.png'],
   ['Where the Spirit rests', 'https://alastairmcneill.com/assets/projects/1630243195_projects_4374_612b897bc190d.png'],
   ['Functional Combinations and Collaborations, Vol. 1', 'https://alastairmcneill.com/assets/projects/1630240300_projects_4369_612b7e8a961d8.png'],
@@ -46,9 +48,49 @@ const projects = [
 
 export default function Home() {
   const [open, setOpen] = useState<number | null>(null);
+  const [playing, setPlaying] = useState<number | null>(null);
+  const audio = useRef<{ context: AudioContext; oscillator: OscillatorNode; gain: GainNode } | null>(null);
+
+  const stopSound = () => {
+    if (!audio.current) return;
+    const { context, oscillator, gain } = audio.current;
+    gain.gain.cancelScheduledValues(context.currentTime);
+    gain.gain.linearRampToValueAtTime(0, context.currentTime + 0.08);
+    oscillator.stop(context.currentTime + 0.1);
+    audio.current = null;
+    setPlaying(null);
+  };
+
+  const playSound = (index: number) => {
+    stopSound();
+    const context = new AudioContext();
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 110 + index * 11;
+    gain.gain.setValueAtTime(0.0001, context.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.075, context.currentTime + 0.12);
+    oscillator.connect(gain).connect(context.destination);
+    oscillator.start();
+    audio.current = { context, oscillator, gain };
+    setPlaying(index);
+    window.setTimeout(stopSound, 12000);
+  };
+
+  useEffect(() => () => stopSound(), []);
+
+  const activate = (index: number) => {
+    if (open === index && playing === index) {
+      stopSound();
+      return;
+    }
+    setOpen(index);
+    playSound(index);
+  };
+
   return <main className="project-field" aria-label="Alastair McNeill project archive">
-    {projects.map(([title, image], index) => <button key={image} type="button" className={`slice ${open === index ? 'is-open' : ''}`} onClick={() => setOpen(open === index ? null : index)} aria-label={title} aria-pressed={open === index}>
-      <span className="slab" style={{ '--project-image': `url(${image})` } as CSSProperties}><span className="face front texture" aria-hidden="true" /><span className="face right texture"><span>{title}</span></span><span className="face back texture" aria-hidden="true"><span className="play" /><span className="signal"><i /><i /><i /><i /><i /><i /><i /></span></span><span className="face left texture" aria-hidden="true" /><span className="face top texture" aria-hidden="true" /><span className="face bottom texture" aria-hidden="true" /></span>
+    {projects.map(([title, image], index) => <button key={image} type="button" className={`slice ${open === index ? 'is-open' : ''} ${playing === index ? 'is-playing' : ''}`} onClick={() => activate(index)} aria-label={playing === index ? `Pause ${title}` : `Play ${title}`} aria-pressed={playing === index}>
+      <span className="slab"><span className="face front"><img src={image} alt="" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" /></span><span className="face right"><span className="project-index">{String(index + 1).padStart(2, '0')}</span><strong>{title}</strong></span><span className="face back" aria-hidden="true"><span className="play" /><span className="signal"><i /><i /><i /><i /><i /><i /><i /></span></span><span className="face left neutral" aria-hidden="true" /><span className="face top neutral" aria-hidden="true" /><span className="face bottom neutral" aria-hidden="true" /></span>
     </button>)}
   </main>;
 }
