@@ -19,10 +19,12 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
 .slice.is-info .slab, .slice.is-info:hover .slab, .slice.is-info:focus-within .slab { transform: rotateX(-6deg) rotateY(-90deg); }
 .slice.is-media-1 .slab, .slice.is-media-1:hover .slab, .slice.is-media-1:focus-within .slab { transform: rotateX(-5deg) rotateY(-180deg); }
 .slice.is-media-2 .slab, .slice.is-media-2:hover .slab, .slice.is-media-2:focus-within .slab { transform: rotateX(-5deg) rotateY(-270deg); }
+.slice:not(.is-media-1) .back, .slice:not(.is-media-2) .left { visibility: hidden; }
+.slice.is-media-1 .back, .slice.is-media-2 .left { visibility: visible; }
 .slab:focus-visible { outline: 2px solid #151515; outline-offset: .7rem; }
-.face { position: absolute; inset: 0; overflow: hidden; border: 0; backface-visibility: hidden; font: inherit; text-align: inherit; }
+.face { position: absolute; inset: 0; overflow: hidden; border: 0; padding: 0; backface-visibility: hidden; font: inherit; text-align: inherit; }
 .face:not(.neutral) { cursor: pointer; }
-.front { background: #151515; box-shadow: 1.2rem 1.5rem 2.6rem rgba(0,0,0,.14); transform: translateZ(calc(var(--slice) / 2)); }
+.front { appearance: none; -webkit-appearance: none; background: #e7e7e4; box-shadow: 1.2rem 1.5rem 2.6rem rgba(0,0,0,.14); transform: translateZ(calc(var(--slice) / 2)); }
 .front img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .right { display: flex; flex-direction: column; justify-content: space-between; gap: .9rem; padding: clamp(.8rem,1.7vw,1.45rem); color: #f4f4f1; background: #151515; transform: rotateY(90deg) translateZ(calc(var(--slice) / 2)); }
 .right strong { max-width: 9ch; font-size: clamp(1rem,1.8vw,1.85rem); font-weight: 500; line-height: .9; letter-spacing: -.075em; }
@@ -33,7 +35,7 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
 .top { transform: rotateX(90deg) translateZ(calc(var(--slice) / 2)); }
 .bottom { transform: rotateX(-90deg) translateZ(calc(var(--slice) / 2)); }
 .back { transform: rotateY(180deg) translateZ(calc(var(--slice) / 2)); }
-.cube-cap { background: #151515; }
+.cube-cap { background: #e7e7e4; }
 .media-face { display: grid; place-items: center; background-color: #111; background-position: center; background-size: cover; box-shadow: 1.2rem 1.5rem 2.6rem rgba(0,0,0,.18); }
 .media-slot { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; pointer-events: auto; }
 .embedded-player { position: relative; z-index: 1; display: block; overflow: hidden; background: #111; }
