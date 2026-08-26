@@ -87,6 +87,7 @@ const projects = titles.map((title, index) => {
           player.className = 'embedded-player youtube';
           const videoUrl = new URL(slot.dataset.src);
           videoUrl.searchParams.set('controls', '0');
+          videoUrl.searchParams.set('autoplay', '1');
           videoUrl.searchParams.set('enablejsapi', '1');
           videoUrl.searchParams.set('iv_load_policy', '3');
           videoUrl.searchParams.set('modestbranding', '1');
@@ -98,21 +99,16 @@ const projects = titles.map((title, index) => {
           frame.allow = 'autoplay; encrypted-media; picture-in-picture';
           frame.allowFullscreen = true;
           frame.addEventListener('load', () => {
-            frame.contentWindow?.postMessage(JSON.stringify({ event: 'listening' }), videoUrl.origin);
+            frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), videoUrl.origin);
           });
           player.append(frame);
-          const playLayer = document.createElement('button');
-          playLayer.type = 'button';
-          playLayer.className = 'youtube-play-layer';
-          playLayer.setAttribute('aria-label', `Play ${slot.dataset.title} video`);
           slot.append(player);
-          slot.append(playLayer);
           return;
         }
         const frame = document.createElement('iframe');
         const player = document.createElement('span');
         player.className = 'embedded-player bandcamp';
-        frame.src = slot.dataset.src.replace('/size=large/', '/size=small/').replace('/transparent=true/', '/artwork=none/transparent=true/');
+        frame.src = slot.dataset.src.replace('/transparent=true/', '/tracklist=false/artwork=large/transparent=true/');
         frame.title = `${slot.dataset.title} audio`;
         frame.allow = 'encrypted-media; picture-in-picture';
         player.append(frame);
@@ -162,16 +158,7 @@ const projects = titles.map((title, index) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
         const cube = target.closest('.slice');
-        if (cube) {
-          const playLayer = cube.querySelector('.youtube-play-layer');
-          const frame = cube.querySelector('.embedded-player.youtube iframe');
-          if (playLayer && frame) {
-            const bounds = playLayer.getBoundingClientRect();
-            const isPlayPress = event.clientX >= bounds.left && event.clientX <= bounds.right && event.clientY >= bounds.top && event.clientY <= bounds.bottom;
-            if (isPlayPress) frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), new URL(frame.src).origin);
-          }
-          return;
-        }
+        if (cube) return;
         if (target.closest('.filter-nav')) return;
         resetProjects();
       }, { capture: true });
