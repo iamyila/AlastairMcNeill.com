@@ -1,0 +1,180 @@
+---
+import '../../app/globals.css';
+import { categories, filters, localImage, media, projectInfo, titles } from '../../app/page';
+
+const projects = titles.map((title, index) => {
+  const projectMedia = media[index];
+  const mediaFaces = [projectMedia?.audio, projectMedia?.video].filter(Boolean);
+  return { title, index, image: localImage(index), info: projectInfo[index], categories: categories[index], mediaFaces };
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Selected work in sound, image and space." />
+    <title>Alastair McNeill / Yila</title>
+  </head>
+  <body>
+    <main class="project-field" aria-label="Alastair McNeill project archive">
+      <nav class="filter-nav" aria-label="Filter projects">
+        {filters.map(({ id, label }) => {
+          const filterProjects = projects.filter((project) => project.categories.includes(id));
+          return <button class={`filter-cube filter-${id}`} type="button" data-filter={id} aria-pressed="false" aria-label={`Show ${filterProjects.length} ${label.toLowerCase()} projects`}>
+            <span class="filter-count" aria-hidden="true">
+              {filterProjects.map((project) => <i style={`background-image: url(${project.image})`}></i>)}
+            </span>
+            <span class="filter-label">{label}</span>
+          </button>;
+        })}
+      </nav>
+
+      <section class="project-grid">
+        {projects.map((project) => {
+          const [firstMedia, secondMedia] = project.mediaFaces;
+          const firstVideoId = firstMedia?.provider === 'youtube' ? firstMedia.src.match(/embed\/([^?]+)/)?.[1] : undefined;
+          const secondVideoId = secondMedia?.provider === 'youtube' ? secondMedia.src.match(/embed\/([^?]+)/)?.[1] : undefined;
+          return <article class="slice" data-project={project.index} data-categories={project.categories.join(' ')}>
+            <div class="slab">
+              <button class="face front" type="button" data-action="info" aria-label={`Show information for ${project.title}`}>
+                <img src={project.image} alt="" loading={project.index === 0 ? 'eager' : 'lazy'} fetchpriority={project.index === 0 ? 'high' : 'auto'} decoding="async" />
+              </button>
+              <button class="face right" type="button" data-action="media" data-media-count={project.mediaFaces.length} aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Project information for ${project.title}`}>
+                <strong>{project.title}</strong>
+                <small>{[project.info?.year, project.info?.role].filter(Boolean).join(' · ')}</small>
+                <em>{project.info?.summary}</em>
+              </button>
+              <div class="face left media-face neutral" data-position="4" style={`background-image: url(${project.image})`}>
+                {secondMedia && <div class="media-slot" data-position="4" data-provider={secondMedia.provider} data-src={secondMedia.src} data-video-id={secondVideoId} data-title={project.title}></div>}
+              </div>
+              <div class="face top cube-cap" aria-hidden="true"></div>
+              <div class="face bottom cube-cap" aria-hidden="true"></div>
+              <div class="face back media-face neutral" data-position="3" data-has-next={secondMedia ? 'true' : 'false'} style={`background-image: url(${project.image})`}>
+                {firstMedia && <div class="media-slot" data-position="3" data-provider={firstMedia.provider} data-src={firstMedia.src} data-video-id={firstVideoId} data-title={project.title}></div>}
+              </div>
+            </div>
+            {project.mediaFaces.length > 0 && <button class="media-advance" type="button" aria-label={`Show media for ${project.title}`}></button>}
+          </article>;
+        })}
+      </section>
+    </main>
+
+    <script>
+      const main = document.querySelector('.project-field');
+      const cubes = [...document.querySelectorAll('.slice')];
+      const positions = ['is-info', 'is-media-1', 'is-media-2'];
+
+      function clearSlot(slot) {
+        slot.replaceChildren();
+      }
+
+      function resetCube(cube) {
+        cube.classList.remove(...positions);
+        cube.querySelectorAll('.media-slot').forEach(clearSlot);
+      }
+
+      function resetProjects() {
+        cubes.forEach(resetCube);
+      }
+
+      function mountEmbed(slot) {
+        if (slot.firstChild) return;
+        if (slot.dataset.provider === 'youtube') {
+          const frame = document.createElement('iframe');
+          const player = document.createElement('span');
+          player.className = 'embedded-player youtube';
+          const videoUrl = new URL(slot.dataset.src);
+          videoUrl.searchParams.set('controls', '0');
+          videoUrl.searchParams.set('enablejsapi', '1');
+          videoUrl.searchParams.set('iv_load_policy', '3');
+          videoUrl.searchParams.set('modestbranding', '1');
+          videoUrl.searchParams.set('origin', window.location.origin);
+          videoUrl.searchParams.set('playsinline', '1');
+          videoUrl.searchParams.set('rel', '0');
+          frame.src = videoUrl.toString();
+          frame.title = `${slot.dataset.title} video`;
+          frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+          frame.allowFullscreen = true;
+          frame.addEventListener('load', () => {
+            frame.contentWindow?.postMessage(JSON.stringify({ event: 'listening' }), videoUrl.origin);
+          });
+          player.append(frame);
+          const playLayer = document.createElement('button');
+          playLayer.type = 'button';
+          playLayer.className = 'youtube-play-layer';
+          playLayer.setAttribute('aria-label', `Play ${slot.dataset.title} video`);
+          slot.append(player);
+          slot.append(playLayer);
+          return;
+        }
+        const frame = document.createElement('iframe');
+        const player = document.createElement('span');
+        player.className = 'embedded-player bandcamp';
+        frame.src = slot.dataset.src.replace('/size=large/', '/size=small/').replace('/transparent=true/', '/artwork=none/transparent=true/');
+        frame.title = `${slot.dataset.title} audio`;
+        frame.allow = 'encrypted-media; picture-in-picture';
+        player.append(frame);
+        slot.append(player);
+      }
+
+      function setCubePosition(cube, position) {
+        cubes.forEach((item) => { if (item !== cube) resetCube(item); });
+        cube.classList.remove(...positions);
+        cube.querySelectorAll('.media-slot').forEach(clearSlot);
+        if (position === 2) cube.classList.add('is-info');
+        if (position === 3) cube.classList.add('is-media-1');
+        if (position === 4) cube.classList.add('is-media-2');
+        if (position > 2) mountEmbed(cube.querySelector(`.media-slot[data-position="${position}"]`));
+      }
+
+      document.querySelector('.filter-nav').addEventListener('click', (event) => {
+        const filterButton = event.target.closest('[data-filter]');
+        if (!filterButton) return;
+        const nextFilter = filterButton.dataset.filter;
+        const isActive = filterButton.classList.contains('is-active');
+        document.querySelectorAll('[data-filter]').forEach((button) => {
+          button.classList.toggle('is-active', !isActive && button === filterButton);
+          button.setAttribute('aria-pressed', String(!isActive && button === filterButton));
+        });
+        cubes.forEach((cube) => { cube.hidden = !isActive && !cube.dataset.categories.split(' ').includes(nextFilter); });
+        resetProjects();
+      });
+
+      cubes.forEach((cube) => {
+        const front = cube.querySelector('.front');
+        const info = cube.querySelector('.right');
+        const mediaAdvance = cube.querySelector('.media-advance');
+        front.addEventListener('click', () => setCubePosition(cube, 2));
+        info.addEventListener('click', () => {
+          if (Number(info.dataset.mediaCount)) setCubePosition(cube, 3);
+        });
+        mediaAdvance?.addEventListener('click', () => setCubePosition(cube, 3));
+        const firstMediaFace = cube.querySelector('.media-face[data-position="3"]');
+        firstMediaFace.addEventListener('click', (event) => {
+          if (event.target.closest('.embedded-player')) return;
+          if (firstMediaFace.dataset.hasNext === 'true') setCubePosition(cube, 4);
+        });
+      });
+
+      main.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const cube = target.closest('.slice');
+        if (cube) {
+          const playLayer = cube.querySelector('.youtube-play-layer');
+          const frame = cube.querySelector('.embedded-player.youtube iframe');
+          if (playLayer && frame) {
+            const bounds = playLayer.getBoundingClientRect();
+            const isPlayPress = event.clientX >= bounds.left && event.clientX <= bounds.right && event.clientY >= bounds.top && event.clientY <= bounds.bottom;
+            if (isPlayPress) frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), new URL(frame.src).origin);
+          }
+          return;
+        }
+        if (target.closest('.filter-nav')) return;
+        resetProjects();
+      }, { capture: true });
+    </script>
+  </body>
+</html>
