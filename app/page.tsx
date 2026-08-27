@@ -1,4 +1,4 @@
-export type Media = { provider: 'youtube' | 'bandcamp' | 'spotify' | 'apple' | 'atmos'; src: string };
+export type Media = { provider: 'youtube' | 'vimeo' | 'bandcamp' | 'soundcloud' | 'spotify' | 'apple' | 'atmos'; src: string };
 export type ProjectMedia = { audio?: Media; video?: Media };
 export type Filter = 'all' | 'art' | 'music' | 'mastering' | 'production' | 'commercial';
 export type ProjectInfo = { year?: string; role: string; summary: string };
@@ -36,22 +36,34 @@ export const media: Record<number, ProjectMedia> = {
   },
   7: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL1LuBprOHA-4BszAGnULFztdbiHLs_MK0&rel=0&modestbranding=1&playsinline=1&controls=1' } },
   8: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/ggobwiSF3js?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  9: { audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/611140548&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true' } },
   10: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/u2kqmWqKeU4?rel=0&modestbranding=1&playsinline=1&controls=1' } },
-  11: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/1W5_8dg0Kew?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  11: {
+    audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/441945816&color=%232b262b&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/1W5_8dg0Kew?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
   12: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/v4VemumPHKc?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  13: { audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/300955884&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true' } },
   14: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/ZtCjo3scpSY?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   15: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/_aU5dzBn0Dk?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  16: { audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/989158060&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true' } },
+  17: { audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/235199102&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true' } },
   18: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/nQUltYoJMFo?rel=0&modestbranding=1&playsinline=1&controls=1' } },
-  19: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/sq_7V2Ys-kQ?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  19: {
+    audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/460817271&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/sq_7V2Ys-kQ?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
+  20: { video: { provider: 'vimeo', src: 'https://player.vimeo.com/video/84037010' } },
   23: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/FqH7bqhf8as?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   24: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/A6FmxfUr44E?rel=0&modestbranding=1&playsinline=1&controls=1' } },
-  25: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/qGPiNf4X4co?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   26: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/yHwSYrdwsvQ?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   27: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/c49roqlqyTA?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   28: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/xDo8xWRQrmc?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  29: { video: { provider: 'vimeo', src: 'https://player.vimeo.com/video/89859467' } },
   30: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/Cxfx9pqHUh8?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   33: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/O3HCXh9WQSo?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   34: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/lqPcQeFbIVY?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  35: { audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/265042295&color=ff5500' } },
   36: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/GjRSkOJemew?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   37: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/CWrMGXwhFLk?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   38: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/l8UfvHnna38?rel=0&modestbranding=1&playsinline=1&controls=1' } },
@@ -113,7 +125,7 @@ export const projectInfo: Record<number, ProjectInfo> = {
   43: { year: '2023', role: 'MASTERING', summary: 'Zhlehtet live in a single room at Cankarjev dom, Vrhnika.' },
   44: { year: '2024', role: 'MASTERING', summary: 'Zhlehtet’s ambient, improvised Vrt release.' },
   45: { year: '2025', role: 'MASTERING', summary: 'Zhlehtet’s live suite of written and spontaneous composition.' },
-  46: { year: '2025', role: 'MASTERING', summary: 'Jazz Cerkno Records album by Rok Zalokar & Zhlehtet, featuring Lenart De Bock on tenor saxophone and flute.' },
+  46: { year: '2025', role: 'MASTERING', summary: 'Jazz Cerkno Records album by Rok Zalokar & Zhlehtet.' },
   47: { year: '2025', role: 'MASTERING', summary: 'Lenart De Bock’s debut solo album, released by Jazz Cerkno Records.' },
   48: { year: '2026', role: 'LIVE SPATIAL PERFORMANCE', summary: 'Original work in Cona and Kino Šiška’s octophonic festival of live spatial sound.' },
   49: { year: '2023', role: 'SOLO PERFORMER · SPATIAL SOUND', summary: 'SOMA Dvina, live electronics and real-time sound processing at Galerija ŠKUC.' },

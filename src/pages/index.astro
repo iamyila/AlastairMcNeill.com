@@ -80,6 +80,7 @@ const projects = titles.map((title, index) => {
       const cubes = [...document.querySelectorAll('.slice')];
       const positions = ['is-info', 'is-media-1', 'is-media-2'];
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const mediaLoadTimers = new WeakMap();
       let isFiltering = false;
       let activeFilter = 'all';
 
@@ -88,6 +89,8 @@ const projects = titles.map((title, index) => {
       }
 
       function resetCube(cube) {
+        window.clearTimeout(mediaLoadTimers.get(cube));
+        mediaLoadTimers.delete(cube);
         cube.classList.remove(...positions, 'is-atmos');
         cube.querySelectorAll('.media-slot').forEach(clearSlot);
       }
@@ -98,24 +101,31 @@ const projects = titles.map((title, index) => {
 
       function mountEmbed(slot) {
         if (slot.firstChild) return;
-        if (slot.dataset.provider === 'youtube') {
+        if (slot.dataset.provider === 'youtube' || slot.dataset.provider === 'vimeo') {
           const frame = document.createElement('iframe');
           const player = document.createElement('span');
-          player.className = 'embedded-player youtube';
+          const isYoutube = slot.dataset.provider === 'youtube';
+          player.className = `embedded-player ${isYoutube ? 'youtube' : 'vimeo'}`;
           const videoUrl = new URL(slot.dataset.src);
-          videoUrl.searchParams.set('controls', '0');
           videoUrl.searchParams.set('autoplay', '1');
-          videoUrl.searchParams.set('enablejsapi', '1');
-          videoUrl.searchParams.set('iv_load_policy', '3');
-          videoUrl.searchParams.set('modestbranding', '1');
-          videoUrl.searchParams.set('origin', window.location.origin);
-          videoUrl.searchParams.set('playsinline', '1');
-          videoUrl.searchParams.set('rel', '0');
+          if (isYoutube) {
+            videoUrl.searchParams.set('controls', '0');
+            videoUrl.searchParams.set('enablejsapi', '1');
+            videoUrl.searchParams.set('iv_load_policy', '3');
+            videoUrl.searchParams.set('modestbranding', '1');
+            videoUrl.searchParams.set('origin', window.location.origin);
+            videoUrl.searchParams.set('playsinline', '1');
+            videoUrl.searchParams.set('rel', '0');
+          } else {
+            videoUrl.searchParams.set('title', '0');
+            videoUrl.searchParams.set('byline', '0');
+            videoUrl.searchParams.set('portrait', '0');
+          }
           frame.src = videoUrl.toString();
           frame.title = `${slot.dataset.title} video`;
           frame.allow = 'autoplay; encrypted-media; picture-in-picture';
           frame.allowFullscreen = true;
-          frame.addEventListener('load', () => {
+          if (isYoutube) frame.addEventListener('load', () => {
             frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), videoUrl.origin);
           });
           player.append(frame);
@@ -125,6 +135,32 @@ const projects = titles.map((title, index) => {
             const cube = slot.closest('.slice');
             if (cube) resetCube(cube);
           });
+          slot.append(player);
+          return;
+        }
+        if (slot.dataset.provider === 'soundcloud') {
+          const frame = document.createElement('iframe');
+          const player = document.createElement('span');
+          player.className = 'embedded-player soundcloud';
+          frame.src = slot.dataset.src;
+          frame.title = `${slot.dataset.title} audio`;
+          frame.allow = 'autoplay';
+          player.append(frame);
+          const mediaFace = slot.closest('.media-face');
+          if (mediaFace?.dataset.hasNext === 'true') {
+            const advance = document.createElement('button');
+            advance.type = 'button';
+            advance.className = 'media-turn';
+            advance.setAttribute('aria-label', `Show next media for ${slot.dataset.title}`);
+            advance.addEventListener('click', (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              const cube = slot.closest('.slice');
+              if (cube) setCubePosition(cube, 4);
+            });
+            slot.append(advance, player);
+            return;
+          }
           slot.append(player);
           return;
         }
@@ -210,8 +246,22 @@ const projects = titles.map((title, index) => {
         slot.append(player);
       }
 
+      function loadMediaAfterRotation(cube, position) {
+        window.clearTimeout(mediaLoadTimers.get(cube));
+        const delay = reduceMotion ? 0 : 430;
+        const timer = window.setTimeout(() => {
+          const isStillShowing = (position === 3 && cube.classList.contains('is-media-1'))
+            || (position === 4 && cube.classList.contains('is-media-2'));
+          if (!isStillShowing) return;
+          const slot = cube.querySelector(`.media-slot[data-position="${position}"]`);
+          if (slot) mountEmbed(slot);
+        }, delay);
+        mediaLoadTimers.set(cube, timer);
+      }
+
       function setCubePosition(cube, position) {
         cubes.forEach((item) => { if (item !== cube) resetCube(item); });
+        window.clearTimeout(mediaLoadTimers.get(cube));
         cube.classList.remove(...positions);
         cube.querySelectorAll('.media-slot').forEach(clearSlot);
         if (position === 2) cube.classList.add('is-info');
@@ -220,7 +270,7 @@ const projects = titles.map((title, index) => {
           if (cube.dataset.atmos === 'true') cube.classList.add('is-atmos');
         }
         if (position === 4) cube.classList.add('is-media-2');
-        if (position > 2) mountEmbed(cube.querySelector(`.media-slot[data-position="${position}"]`));
+        if (position > 2) loadMediaAfterRotation(cube, position);
       }
 
       function animate(element, keyframes, duration) {
