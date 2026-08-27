@@ -1,6 +1,6 @@
 export type Media = { provider: 'youtube' | 'bandcamp'; src: string };
 export type ProjectMedia = { audio?: Media; video?: Media };
-export type Filter = 'art' | 'music' | 'mastering' | 'production' | 'commercial';
+export type Filter = 'all' | 'art' | 'music' | 'mastering' | 'production' | 'commercial';
 export type ProjectInfo = { year?: string; role: string; summary: string };
 
 export const titles = [
@@ -121,7 +121,7 @@ export const categories: Record<number, Filter[]> = {
 };
 
 export const filters: { id: Filter; label: string }[] = [
-  { id: 'art', label: 'Art' }, { id: 'music', label: 'Music' }, { id: 'mastering', label: 'Mastering' }, { id: 'production', label: 'Production' }, { id: 'commercial', label: 'Commercial' },
+  { id: 'all', label: 'All' }, { id: 'art', label: 'Art' }, { id: 'music', label: 'Music' }, { id: 'mastering', label: 'Mastering' }, { id: 'production', label: 'Production' }, { id: 'commercial', label: 'Commercial' },
 ];
 
 export const localImage = (index: number) => {

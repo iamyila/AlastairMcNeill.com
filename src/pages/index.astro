@@ -21,8 +21,8 @@ const projects = titles.map((title, index) => {
     <main class="project-field" aria-label="Alastair McNeill project archive">
       <nav class="filter-nav" aria-label="Filter projects">
         {filters.map(({ id, label }) => {
-          const filterProjects = projects.filter((project) => project.categories.includes(id));
-          return <button class={`filter-cube filter-${id}`} type="button" data-filter={id} aria-pressed="false" aria-label={`Show ${filterProjects.length} ${label.toLowerCase()} projects`}>
+          const filterProjects = id === 'all' ? projects : projects.filter((project) => project.categories.includes(id));
+          return <button class={`filter-cube filter-${id}${id === 'all' ? ' is-active' : ''}`} type="button" data-filter={id} aria-pressed={id === 'all' ? 'true' : 'false'} aria-label={`Show ${filterProjects.length} ${label.toLowerCase()} projects`}>
             <span class="filter-count" aria-hidden="true">
               {filterProjects.map((project) => <i style={`background-image: url(${project.image})`}></i>)}
             </span>
@@ -65,6 +65,9 @@ const projects = titles.map((title, index) => {
       const main = document.querySelector('.project-field');
       const cubes = [...document.querySelectorAll('.slice')];
       const positions = ['is-info', 'is-media-1', 'is-media-2'];
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let isFiltering = false;
+      let activeFilter = 'all';
 
       function clearSlot(slot) {
         slot.replaceChildren();
@@ -125,17 +128,71 @@ const projects = titles.map((title, index) => {
         if (position > 2) mountEmbed(cube.querySelector(`.media-slot[data-position="${position}"]`));
       }
 
+      function animate(element, keyframes, duration) {
+        if (reduceMotion) return Promise.resolve();
+        return element.animate(keyframes, {
+          duration,
+          easing: 'cubic-bezier(.2,.82,.18,1)',
+          fill: 'both',
+        }).finished.catch(() => undefined);
+      }
+
+      async function filterProjects(nextFilter) {
+        if (isFiltering) return;
+        isFiltering = true;
+
+        const nextVisible = new Set(nextFilter === 'all'
+          ? cubes
+          : cubes.filter((cube) => cube.dataset.categories.split(' ').includes(nextFilter)));
+        const exiting = cubes.filter((cube) => !cube.hidden && !nextVisible.has(cube));
+
+        resetProjects();
+        await Promise.all(exiting.map((cube) => animate(cube, [
+          { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
+          { opacity: 0, transform: 'translate3d(0, 1.15rem, 0) scale(.9)' },
+        ], 150)));
+        exiting.forEach((cube) => { cube.hidden = true; });
+
+        const retained = cubes.filter((cube) => !cube.hidden && nextVisible.has(cube));
+        const before = new Map(retained.map((cube) => [cube, cube.getBoundingClientRect()]));
+        const entering = [...nextVisible].filter((cube) => cube.hidden);
+        entering.forEach((cube) => {
+          cube.hidden = false;
+          cube.style.visibility = 'hidden';
+        });
+
+        const moves = retained.map((cube) => {
+          const start = before.get(cube);
+          const end = cube.getBoundingClientRect();
+          return animate(cube, [
+            { transform: `translate3d(${start.left - end.left}px, ${start.top - end.top}px, 0)` },
+            { transform: 'translate3d(0, 0, 0)' },
+          ], 400);
+        });
+        const arrivals = entering.map((cube) => {
+          cube.style.visibility = '';
+          return animate(cube, [
+            { opacity: 0, transform: 'translate3d(0, 1rem, 0) scale(.9)' },
+            { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
+          ], 360);
+        });
+
+        await Promise.all([...moves, ...arrivals]);
+        isFiltering = false;
+      }
+
       document.querySelector('.filter-nav').addEventListener('click', (event) => {
         const filterButton = event.target.closest('[data-filter]');
-        if (!filterButton) return;
-        const nextFilter = filterButton.dataset.filter;
-        const isActive = filterButton.classList.contains('is-active');
+        if (!filterButton || isFiltering) return;
+        const requestedFilter = filterButton.dataset.filter;
+        const nextFilter = requestedFilter === activeFilter && requestedFilter !== 'all' ? 'all' : requestedFilter;
         document.querySelectorAll('[data-filter]').forEach((button) => {
-          button.classList.toggle('is-active', !isActive && button === filterButton);
-          button.setAttribute('aria-pressed', String(!isActive && button === filterButton));
+          const isActive = button.dataset.filter === nextFilter;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-pressed', String(isActive));
         });
-        cubes.forEach((cube) => { cube.hidden = !isActive && !cube.dataset.categories.split(' ').includes(nextFilter); });
-        resetProjects();
+        activeFilter = nextFilter;
+        filterProjects(nextFilter);
       });
 
       cubes.forEach((cube) => {
