@@ -53,7 +53,7 @@ export const media: Record<number, ProjectMedia> = {
     audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/460817271&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true' },
     video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/sq_7V2Ys-kQ?rel=0&modestbranding=1&playsinline=1&controls=1' },
   },
-  20: { video: { provider: 'vimeo', src: 'https://player.vimeo.com/video/84037010' } },
+  22: { video: { provider: 'vimeo', src: 'https://player.vimeo.com/video/84037010' } },
   23: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/FqH7bqhf8as?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   24: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/A6FmxfUr44E?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   26: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/yHwSYrdwsvQ?rel=0&modestbranding=1&playsinline=1&controls=1' } },
