@@ -17,17 +17,46 @@ export const media: Record<number, ProjectMedia> = {
     video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/TIuGFvr5yhU?rel=0&modestbranding=1&playsinline=1&controls=1' },
   },
   1: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=4027376985/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
-  2: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=3987444618/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
+  2: {
+    audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=3987444618/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/CT0lMBIpXrg?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
   3: {
     audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=2683530894/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' },
     video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/jgBRVmc9kFM?rel=0&modestbranding=1&playsinline=1&controls=1' },
   },
-  4: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=1823207988/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
+  4: {
+    audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=1823207988/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/MeePC37cJN4?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
   5: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/4yiIUScgvjk?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   6: {
     audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=3668449147/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' },
     video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/LjFm8f_TQRc?rel=0&playsinline=1&controls=1' },
   },
+  7: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL1LuBprOHA-4BszAGnULFztdbiHLs_MK0&rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  8: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/ggobwiSF3js?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  10: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/u2kqmWqKeU4?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  11: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/1W5_8dg0Kew?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  12: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/v4VemumPHKc?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  14: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/ZtCjo3scpSY?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  15: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/_aU5dzBn0Dk?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  18: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/nQUltYoJMFo?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  19: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/sq_7V2Ys-kQ?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  23: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/FqH7bqhf8as?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  24: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/A6FmxfUr44E?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  25: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/qGPiNf4X4co?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  26: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/yHwSYrdwsvQ?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  27: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/c49roqlqyTA?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  28: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/xDo8xWRQrmc?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  30: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/Cxfx9pqHUh8?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  33: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/O3HCXh9WQSo?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  34: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/lqPcQeFbIVY?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  36: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/GjRSkOJemew?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  37: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/CWrMGXwhFLk?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  38: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/l8UfvHnna38?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  39: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/-nYdsNqHo1g?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  40: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/4LRNh586ufc?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   42: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=2598884347/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
   43: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=4116344490/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
   44: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=2309671465/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
@@ -107,6 +136,7 @@ export const localImage = (index: number) => {
     47: '/media/projects/mastering-a-plea-for-tenderness.jpg',
   };
   if (masteringImages[index]) return masteringImages[index];
-  if (index === 4) return '/media/projects/functional-combinations-vol1.jpg';
+  if (index === 3) return '/media/projects/where-the-spirit-rests.jpg';
+  if (index === 4) return '/media/projects/functional-combinations-vol1-cover.jpg';
   return index === 35 ? fallbackImages[index] : `/media/projects/${String(index + 1).padStart(3, '0')}.jpg`;
 };
