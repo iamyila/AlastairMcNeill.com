@@ -1,10 +1,10 @@
-export type Media = { provider: 'youtube' | 'bandcamp'; src: string };
+export type Media = { provider: 'youtube' | 'bandcamp' | 'spotify' | 'apple' | 'atmos'; src: string };
 export type ProjectMedia = { audio?: Media; video?: Media };
 export type Filter = 'all' | 'art' | 'music' | 'mastering' | 'production' | 'commercial';
 export type ProjectInfo = { year?: string; role: string; summary: string };
 
 export const titles = [
-  'The Land We Knew the Best — Chris Eckman', 'Intention, Intensity, Shuffle — Zhlehtet', 'Dysfunctional Combinations and Collaborations, Vol. 2', 'Where the Spirit rests', 'Functional Combinations and Collaborations, Vol. 1', 'The World as a Composer', 'Crest', 'Nature Scene sessions', 'Cross Intentions', 'Reel To Reel Night Program', 'Izis 6', 'Better (of) me', 'Souvenir Razkitje', 'Brez Upora', 'Souvenir', 'SEQ', 'Matevz Kolenc', 'Dani Siciliano', 'Hairless toys', 'Overload', 'Imaginature', 'Souvenir Suvenir', 'Behind The Cover Rouge Dior', 'Lets Aurora', 'Idu', 'Skate Uphill', 'PWCA Tree', 'Un puit qui fuit', 'Sound of Kings', 'Jean Imbert', 'Compulse', 'Oh No the Drift Of the World', 'Felicity', 'Distraction Pieces', 'Aloosh', 'Takin Off', 'Overpowered', 'Angles', 'Astronaut', 'Unknown Devices', 'Playing God', 'The Only Thing I Know — Žigan & Kristijan Krajnčan', 'Poletje Loops — Zhlehtet', 'Portals Vol. 2 — Zhlehtet', 'Vrt — Zhlehtet', 'Faded Worlds Suite — Zhlehtet', 'Pieces for Collective Change — Rok Zalokar & Zhlehtet', 'A Plea for Tenderness — Lenart De Bock',
+  'The Land We Knew the Best — Chris Eckman', 'Intention, Intensity, Shuffle — Zhlehtet', 'Dysfunctional Combinations and Collaborations, Vol. 2', 'Where the Spirit rests', 'Functional Combinations and Collaborations, Vol. 1', 'The World as a Composer', 'Crest', 'Nature Scene sessions', 'Cross Intentions', 'Reel To Reel Night Program', 'Izis 6', 'Better (of) me', 'Souvenir Razkitje', 'Brez Upora', 'Souvenir', 'SEQ', 'Matevz Kolenc', 'Dani Siciliano', 'Hairless toys', 'Overload', 'Imaginature', 'Souvenir Suvenir', 'Behind The Cover Rouge Dior', 'Lets Aurora', 'Idu', 'Skate Uphill', 'PWCA Tree', 'Un puit qui fuit', 'Sound of Kings', 'Jean Imbert', 'Compulse', 'Oh No the Drift Of the World', 'Felicity', 'Distraction Pieces', 'Aloosh', 'Takin Off', 'Overpowered', 'Angles', 'Astronaut', 'Unknown Devices', 'Playing God', 'The Only Thing I Know — Žigan & Kristijan Krajnčan', 'Poletje Loops — Zhlehtet', 'Portals Vol. 2 — Zhlehtet', 'Vrt — Zhlehtet', 'Faded Worlds Suite — Zhlehtet', 'Pieces for Collective Change — Rok Zalokar & Zhlehtet', 'A Plea for Tenderness — Lenart De Bock', 'SO.UND.ING Acousmonium INput', 'Ropotarnica XXIX', 'Sound Explicit 2024', 'M Antarei — Olenc',
 ] as const;
 
 export const fallbackImages = [
@@ -63,6 +63,7 @@ export const media: Record<number, ProjectMedia> = {
   45: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=3751102071/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
   46: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=321693275/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
   47: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/YFQnCGROl-Y?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  51: { audio: { provider: 'atmos', src: 'https://music.apple.com/us/album/m-antarei-single/1738042517' } },
 };
 
 export const projectInfo: Record<number, ProjectInfo> = {
@@ -114,14 +115,18 @@ export const projectInfo: Record<number, ProjectInfo> = {
   45: { year: '2025', role: 'MASTERING', summary: 'Zhlehtet’s live suite of written and spontaneous composition.' },
   46: { year: '2025', role: 'MASTERING', summary: 'Jazz Cerkno Records album by Rok Zalokar & Zhlehtet, featuring Lenart De Bock on tenor saxophone and flute.' },
   47: { year: '2025', role: 'MASTERING', summary: 'Lenart De Bock’s debut solo album, released by Jazz Cerkno Records.' },
+  48: { year: '2026', role: 'LIVE SPATIAL PERFORMANCE', summary: 'Original work in Cona and Kino Šiška’s octophonic festival of live spatial sound.' },
+  49: { year: '2023', role: 'SOLO PERFORMER · SPATIAL SOUND', summary: 'SOMA Dvina, live electronics and real-time sound processing at Galerija ŠKUC.' },
+  50: { year: '2024', role: 'SOLO PERFORMER · SPATIAL SOUND', summary: 'Electric cello, hexaphonic guitar tuner and guitar amplifiers spatialised across Cukrarna.' },
+  51: { year: '2024', role: 'ATMOS MIX · MASTER', summary: 'Immersive mix and master for Olenc’s Nature Scene Records single.' },
 };
 
 export const categories: Record<number, Filter[]> = {
-  0: ['music', 'production'], 1: ['music', 'mastering'], 2: ['music', 'production'], 3: ['music', 'production'], 4: ['music', 'production'], 5: ['art'], 6: ['music', 'production'], 7: ['art', 'music', 'production'], 8: ['art'], 9: ['art'], 10: ['art'], 11: ['music', 'production'], 12: ['art'], 13: ['art'], 14: ['art', 'music'], 15: ['music', 'commercial'], 16: ['music', 'production'], 17: ['music', 'production'], 18: ['music', 'production'], 19: ['music', 'production'], 20: ['music', 'production'], 21: ['art'], 22: ['commercial', 'production'], 23: ['commercial', 'production'], 24: ['art'], 25: ['music', 'commercial'], 26: ['art'], 27: ['art'], 28: ['art'], 29: ['commercial', 'production'], 30: ['art'], 31: ['art'], 32: ['commercial', 'production'], 33: ['music', 'production'], 34: ['art'], 35: ['music', 'production'], 36: ['music', 'production'], 37: ['music', 'production'], 38: ['music', 'production'], 39: ['music'], 40: ['music', 'production'], 41: ['music', 'mastering'], 42: ['music', 'mastering'], 43: ['music', 'mastering'], 44: ['music', 'mastering'], 45: ['music', 'mastering'], 46: ['music', 'mastering'], 47: ['music', 'mastering'],
+  0: ['music', 'production'], 1: ['music', 'mastering'], 2: ['music', 'production'], 3: ['music', 'production'], 4: ['music', 'production'], 5: ['art'], 6: ['music', 'production'], 7: ['art', 'music', 'production'], 8: ['art'], 9: ['art'], 10: ['art'], 11: ['music', 'production'], 12: ['art'], 13: ['art'], 14: ['art', 'music'], 15: ['music', 'commercial'], 16: ['music', 'production'], 17: ['music', 'production'], 18: ['music', 'production'], 19: ['music', 'production'], 20: ['music', 'production'], 21: ['art'], 22: ['commercial', 'production'], 23: ['commercial', 'production'], 24: ['art'], 25: ['music', 'commercial'], 26: ['art'], 27: ['art'], 28: ['art'], 29: ['commercial', 'production'], 30: ['art'], 31: ['art'], 32: ['commercial', 'production'], 33: ['music', 'production'], 34: ['art'], 35: ['music', 'production'], 36: ['music', 'production'], 37: ['music', 'production'], 38: ['music', 'production'], 39: ['music'], 40: ['music', 'production'], 41: ['music', 'mastering'], 42: ['music', 'mastering'], 43: ['music', 'mastering'], 44: ['music', 'mastering'], 45: ['music', 'mastering'], 46: ['music', 'mastering'], 47: ['music', 'mastering'], 48: ['art', 'music'], 49: ['art', 'music'], 50: ['art', 'music'], 51: ['music', 'mastering', 'production'],
 };
 
 export const filters: { id: Filter; label: string }[] = [
-  { id: 'all', label: 'All' }, { id: 'art', label: 'Art' }, { id: 'music', label: 'Music' }, { id: 'mastering', label: 'Mastering' }, { id: 'production', label: 'Production' }, { id: 'commercial', label: 'Commercial' },
+  { id: 'all', label: 'Everything' }, { id: 'art', label: 'Art' }, { id: 'music', label: 'Music' }, { id: 'mastering', label: 'Mastering' }, { id: 'production', label: 'Production' }, { id: 'commercial', label: 'Commercial' },
 ];
 
 export const localImage = (index: number) => {
@@ -138,5 +143,9 @@ export const localImage = (index: number) => {
   if (masteringImages[index]) return masteringImages[index];
   if (index === 3) return '/media/projects/where-the-spirit-rests.jpg';
   if (index === 4) return '/media/projects/functional-combinations-vol1-cover.jpg';
+  if (index === 48) return '/media/projects/sounding-acousmonium-input.jpg';
+  if (index === 49) return '/media/projects/ropotarnica-xxix.jpg';
+  if (index === 50) return '/media/projects/sound-explicit-cukrarna.jpg';
+  if (index === 51) return '/media/projects/olenc-m-antarei.jpg';
   return index === 35 ? fallbackImages[index] : `/media/projects/${String(index + 1).padStart(3, '0')}.jpg`;
 };

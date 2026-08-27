@@ -19,6 +19,8 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
 .slice.is-info .slab, .slice.is-info:hover .slab, .slice.is-info:focus-within .slab { transform: rotateX(-6deg) rotateY(-90deg); }
 .slice.is-media-1 .slab, .slice.is-media-1:hover .slab, .slice.is-media-1:focus-within .slab { transform: rotateX(-5deg) rotateY(-180deg); }
 .slice.is-media-2 .slab, .slice.is-media-2:hover .slab, .slice.is-media-2:focus-within .slab { transform: rotateX(-5deg) rotateY(-270deg); }
+.slice.is-atmos { z-index: 3; }
+.slice.is-atmos .slab, .slice.is-atmos:hover .slab, .slice.is-atmos:focus-within .slab { transform: rotateX(-3deg) rotateY(-180deg) scale(1.16); }
 .slice:not(.is-media-1) .back, .slice:not(.is-media-2) .left { visibility: hidden; }
 .slice.is-media-1 .back, .slice.is-media-2 .left { visibility: visible; }
 .slab:focus-visible { outline: 2px solid #151515; outline-offset: .7rem; }
@@ -39,9 +41,29 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
 .media-face { display: grid; place-items: center; background-color: #111; background-position: center; background-size: cover; box-shadow: 1.2rem 1.5rem 2.6rem rgba(0,0,0,.18); }
 .media-slot { position: absolute; z-index: 2; inset: 0; display: grid; place-items: center; pointer-events: auto; }
 .embedded-player { position: relative; z-index: 1; display: block; overflow: hidden; background: #111; }
-.embedded-player.youtube { width: 100%; height: 100%; }
-.embedded-player.bandcamp { width: 56%; height: 56%; box-shadow: 0 .5rem 1.4rem rgba(0,0,0,.28); }
+.embedded-player.youtube { width: 100%; height: 100%; pointer-events: none; }
+.embedded-player.apple { width: 100%; height: 100%; }
+.embedded-player.bandcamp { z-index: 1; width: 56%; height: 56%; box-shadow: 0 .5rem 1.4rem rgba(0,0,0,.28); }
+.media-turn { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: pointer; }
+.media-turn:focus-visible { outline: 2px solid #f4f4f1; outline-offset: -1rem; }
 .embedded-player iframe { display: block; width: 100%; height: 100%; border: 0; background: #111; }
+.spotify-link { display: grid; place-items: center; width: clamp(3.5rem, 18%, 5rem); aspect-ratio: 1; border: 1px solid rgba(244,244,241,.88); border-radius: 50%; background: rgba(12,12,12,.16); box-shadow: 0 .35rem .9rem rgba(0,0,0,.22); transition: transform .18s ease, background-color .18s ease; }
+.spotify-link:hover, .spotify-link:focus-visible { transform: scale(1.08); background: rgba(12,12,12,.42); outline: none; }
+.spotify-play { width: 0; height: 0; margin-left: .22rem; border-top: .65rem solid transparent; border-bottom: .65rem solid transparent; border-left: 1rem solid #f4f4f1; }
+.atmos-view { position: relative; display: grid; width: 100%; height: 100%; place-items: center; overflow: hidden; isolation: isolate; background: #080909; }
+.atmos-halo { position: absolute; width: 92%; aspect-ratio: 1; border-radius: 50%; background: center / cover no-repeat var(--atmos-art); opacity: .68; filter: blur(1.45rem) saturate(1.4); transform: scale(1.28); animation: atmos-breathe 7s ease-in-out infinite alternate; }
+.atmos-halo::after { position: absolute; inset: 0; border: 1px solid rgba(244,244,241,.38); border-radius: 50%; content: ''; transform: scale(.76); }
+.atmos-artwork { position: relative; z-index: 1; display: block; width: 66%; aspect-ratio: 1; object-fit: cover; box-shadow: 0 1rem 2.7rem rgba(0,0,0,.55); animation: atmos-arrive .65s cubic-bezier(.2,.82,.18,1) both; }
+.atmos-apple-link { position: absolute; z-index: 2; bottom: 7%; left: 50%; display: flex; align-items: center; justify-content: center; gap: .3rem; min-width: 2.55rem; height: 1.75rem; padding: 0 .48rem; border: 1px solid rgba(244,244,241,.9); border-radius: 999px; color: #f4f4f1; background: rgba(8,9,9,.58); box-shadow: 0 .35rem 1rem rgba(0,0,0,.28); transform: translateX(-50%); transition: transform .18s ease, background-color .18s ease; }
+.atmos-apple-link:hover, .atmos-apple-link:focus-visible { background: rgba(8,9,9,.9); transform: translateX(-50%) scale(1.07); outline: none; }
+.atmos-apple-mark { font: .9rem/1 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; }
+.atmos-play-mark { width: 0; height: 0; border-top: .33rem solid transparent; border-bottom: .33rem solid transparent; border-left: .5rem solid currentColor; }
+.atmos-spatial-mark { position: absolute; z-index: 2; bottom: 7.65%; left: calc(50% + 1.85rem); width: 1.15rem; aspect-ratio: 1; border: 1px solid rgba(244,244,241,.84); border-radius: 50%; box-shadow: inset 0 0 0 .23rem rgba(8,9,9,.43); }
+.atmos-spatial-mark::before, .atmos-spatial-mark::after { position: absolute; top: 50%; width: .48rem; height: .48rem; border: 1px solid rgba(244,244,241,.72); border-radius: 50%; content: ''; transform: translateY(-50%); }
+.atmos-spatial-mark::before { right: calc(100% + .16rem); }
+.atmos-spatial-mark::after { left: calc(100% + .16rem); }
+@keyframes atmos-arrive { from { opacity: 0; transform: scale(.62); } to { opacity: 1; transform: scale(1); } }
+@keyframes atmos-breathe { from { transform: scale(1.16) rotate(-4deg); } to { transform: scale(1.42) rotate(4deg); } }
 .youtube-poster { display: block; width: 100%; height: 100%; border: 0; padding: 0; background: #111; cursor: pointer; }
 .youtube-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .media-empty { display: flex; align-items: end; justify-content: center; gap: .35rem; width: 100%; height: 100%; padding: 2.2rem; }
