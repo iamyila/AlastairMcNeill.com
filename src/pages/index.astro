@@ -357,7 +357,11 @@ const projects = titles.map((title, index) => {
         const firstMediaFace = cube.querySelector('.media-face[data-position="3"]');
         firstMediaFace.addEventListener('click', (event) => {
           if (event.target.closest('.embedded-player, .spotify-link, .atmos-apple-link')) return;
-          if (firstMediaFace.dataset.hasNext === 'true') setCubePosition(cube, 4);
+          if (firstMediaFace.dataset.hasNext === 'true') {
+            setCubePosition(cube, 4);
+          } else {
+            resetCube(cube);
+          }
         });
       });
 
