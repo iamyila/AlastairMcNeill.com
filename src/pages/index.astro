@@ -186,7 +186,6 @@ const projects = projectRecords.map((project) => ({
           const appleLink = document.createElement('a');
           const appleMark = document.createElement('span');
           const playMark = document.createElement('span');
-          const spatialMark = document.createElement('span');
           view.className = 'atmos-view';
           view.style.setProperty('--atmos-art', `url("${slot.dataset.image}")`);
           halo.className = 'atmos-halo';
@@ -202,10 +201,7 @@ const projects = projectRecords.map((project) => ({
           appleMark.textContent = '\uf8ff';
           playMark.className = 'atmos-play-mark';
           appleLink.append(appleMark, playMark);
-          spatialMark.className = 'atmos-spatial-mark';
-          spatialMark.setAttribute('role', 'img');
-          spatialMark.setAttribute('aria-label', 'Spatial Audio / Dolby Atmos mix');
-          view.append(halo, artwork, appleLink, spatialMark);
+          view.append(halo, artwork, appleLink);
           slot.append(view);
           return;
         }

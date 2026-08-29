@@ -369,7 +369,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "soundcloud",
-        "src": "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/989158060&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"
+        "src": "https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/matevzkolenc&color=%23ff5500&auto_play=false&hide_related=false&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true"
       }
     }
   },
@@ -442,7 +442,12 @@ export const projects: Project[] = [
       "production"
     ],
     "image": "/media/projects/hk119-imaginature.jpg",
-    "media": {}
+    "media": {
+      "video": {
+        "provider": "youtube",
+        "src": "https://www.youtube-nocookie.com/embed/3fxylOCrYNY?rel=0&modestbranding=1&playsinline=1&controls=1"
+      }
+    }
   },
   {
     "id": 21,
@@ -467,7 +472,12 @@ export const projects: Project[] = [
       "production"
     ],
     "image": "/media/projects/023.jpg",
-    "media": {}
+    "media": {
+      "video": {
+        "provider": "vimeo",
+        "src": "https://player.vimeo.com/video/80522804"
+      }
+    }
   },
   {
     "id": 23,
@@ -1102,7 +1112,7 @@ export const projects: Project[] = [
     "media": {
       "video": {
         "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/videoseries?list=OLAK5uy_kQ_ogr4oLQ1WXzlJL8ZsmJG37hE5GmpUs&rel=0&modestbranding=1&playsinline=1&controls=1"
+        "src": "https://www.youtube-nocookie.com/embed/6W4gbUsna6E?rel=0&modestbranding=1&playsinline=1&controls=1"
       }
     }
   },
