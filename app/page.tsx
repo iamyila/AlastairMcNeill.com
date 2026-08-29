@@ -4,7 +4,7 @@ export type Filter = 'all' | 'art' | 'music' | 'mastering' | 'production' | 'com
 export type ProjectInfo = { year?: string; role: string; summary: string };
 
 export const titles = [
-  'The Land We Knew the Best — Chris Eckman', 'Intention, Intensity, Shuffle — Zhlehtet', 'Dysfunctional Combinations and Collaborations, Vol. 2', 'Where the Spirit rests', 'Functional Combinations and Collaborations, Vol. 1', 'The World as a Composer', 'Crest', 'Nature Scene sessions', 'Cross Intentions', 'Reel To Reel Night Program', 'Izis 6', 'Better (of) me', 'Souvenir Razkitje', 'Brez Upora', 'Souvenir', 'SEQ', 'Matevz Kolenc', 'Dani Siciliano', 'Hairless toys', 'Overload', 'Imaginature', 'Souvenir Suvenir', 'Behind The Cover Rouge Dior', 'Lets Aurora', 'Idu', 'Skate Uphill', 'PWCA Tree', 'Un puit qui fuit', 'Sound of Kings', 'Jean Imbert', 'Compulse', 'Oh No the Drift Of the World', 'Felicity', 'Distraction Pieces', 'Aloosh', 'Takin Off', 'Overpowered', 'Angles', 'Astronaut', 'Unknown Devices', 'Playing God', 'The Only Thing I Know — Žigan & Kristijan Krajnčan', 'Poletje Loops — Zhlehtet', 'Portals Vol. 2 — Zhlehtet', 'Vrt — Zhlehtet', 'Faded Worlds Suite — Zhlehtet', 'Pieces for Collective Change — Rok Zalokar & Zhlehtet', 'A Plea for Tenderness — Lenart De Bock', 'SO.UND.ING Acousmonium INput', 'Ropotarnica XXIX', 'Sound Explicit 2024', 'M Antarei — Olenc',
+  'The Land We Knew the Best — Chris Eckman', 'Intention, Intensity, Shuffle — Zhlehtet', 'Dysfunctional Combinations and Collaborations, Vol. 2', 'Where the Spirit rests', 'Functional Combinations and Collaborations, Vol. 1', 'The World as a Composer', 'Crest', 'Nature Scene sessions', 'Cross Intentions', 'Reel To Reel Night Program', 'Izis 6', 'Better (of) me', 'Souvenir Razkitje', 'Brez Upora', 'Souvenir', 'SEQ', 'Matevz Kolenc', 'Dani Siciliano', 'Hairless toys', 'Overload', 'Imaginature', 'Souvenir Suvenir', 'Behind The Cover Rouge Dior', 'Lets Aurora', 'Idu', 'Skate Uphill', 'PWCA Tree', 'Un puit qui fuit', 'Sound of Kings', 'Jean Imbert', 'Compulse', 'Oh No the Drift Of the World', 'Felicity', 'Distraction Pieces', 'Aloosh EP', 'Takin Off', 'Overpowered', 'Angles', 'Astronaut', 'Unknown Devices', 'Playing God', 'The Only Thing I Know — Žigan & Kristijan Krajnčan', 'Poletje Loops — Zhlehtet', 'Portals Vol. 2 — Zhlehtet', 'Vrt — Zhlehtet', 'Faded Worlds Suite — Zhlehtet', 'Pieces for Collective Change — Rok Zalokar & Zhlehtet', 'A Plea for Tenderness — Lenart De Bock', 'SO.UND.ING Acousmonium INput', 'Ropotarnica XXIX', 'Sound Explicit 2024', 'M Antarei — Olenc', 'Separate — Aloosh', 'Ceramic — Aloosh', 'Time — Aloosh', 'Butter — Aloosh', 'Another Breakup — Aloosh', 'Tiha milost / V poltemi', 'Gugutke — Gugutke', 'Run After Boyz — Chewy She',
 ] as const;
 
 export const fallbackImages = [
@@ -56,7 +56,10 @@ export const media: Record<number, ProjectMedia> = {
   23: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/FqH7bqhf8as?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   24: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/A6FmxfUr44E?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   26: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/yHwSYrdwsvQ?rel=0&modestbranding=1&playsinline=1&controls=1' } },
-  27: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/c49roqlqyTA?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  27: {
+    audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=4251722872/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/c49roqlqyTA?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
   28: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/xDo8xWRQrmc?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   29: { video: { provider: 'vimeo', src: 'https://player.vimeo.com/video/89859467' } },
   30: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/Cxfx9pqHUh8?rel=0&modestbranding=1&playsinline=1&controls=1' } },
@@ -75,6 +78,20 @@ export const media: Record<number, ProjectMedia> = {
   46: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=321693275/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
   47: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/YFQnCGROl-Y?rel=0&modestbranding=1&playsinline=1&controls=1' } },
   51: { audio: { provider: 'atmos', src: 'https://music.apple.com/us/album/m-antarei-single/1738042517' } },
+  52: {
+    audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=539135201/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/lqPcQeFbIVY?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
+  53: {
+    audio: { provider: 'soundcloud', src: 'https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Fplaylists%2F1830102&show_artwork=true&auto_play=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false' },
+    video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/PNGquFXmLOU?rel=0&modestbranding=1&playsinline=1&controls=1' },
+  },
+  54: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/x4dNcYKDc-M?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  55: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/cuMjew8TbnE?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  56: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=1001479659/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
+  57: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/xpJ9ajmBnTo?rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  58: { video: { provider: 'youtube', src: 'https://www.youtube-nocookie.com/embed/videoseries?list=OLAK5uy_kQ_ogr4oLQ1WXzlJL8ZsmJG37hE5GmpUs&rel=0&modestbranding=1&playsinline=1&controls=1' } },
+  59: { audio: { provider: 'bandcamp', src: 'https://bandcamp.com/EmbeddedPlayer/album=2714683916/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/' } },
 };
 
 export const projectInfo: Record<number, ProjectInfo> = {
@@ -92,7 +109,7 @@ export const projectInfo: Record<number, ProjectInfo> = {
   11: { year: '2018', role: 'WRITER · PRODUCER · MIX', summary: 'Yila and Mina Špiler EP with Dave DK, Rose Tinted and Alleged Witches remixes.' },
   12: { role: 'PERFORMER · SYSTEM DESIGN', summary: 'Improvised Ambisonic work from recorded voice at Sonica Festival and Vodnikova domačija.' },
   13: { role: 'LIVE PERFORMER', summary: 'Tape and digital radio improvisation from Andrej Predin’s text.' },
-  14: { role: 'CO-PRODUCER · PERFORMER', summary: 'Eight-piece multimedia musical theatre with dual projection and CRT screens.' },
+  14: { role: 'PRODUCER', summary: 'Eight-piece multimedia musical theatre with dual projection and CRT screens.' },
   15: { role: 'LIVE PERFORMER', summary: 'Improvised Polyend SEQ performance with Shekuza, Bowrain and Matevž Kolenc.' },
   16: { role: 'MIX · PRE-MASTER · SPATIALISATION', summary: 'Stereo and binaural work with the Melodrom and Laibach-associated composer.' },
   17: { role: 'MUSICAL DIRECTOR', summary: 'Live presentation of Dani Siciliano’s Circus Company album.' },
@@ -106,13 +123,13 @@ export const projectInfo: Record<number, ProjectInfo> = {
   25: { role: 'CO-WRITER · PERFORMER', summary: 'Commissioned Nokia PureView song with Leander Lyons.' },
   26: { role: 'CREATOR · SOUND INSTALLATION', summary: 'Three-day autonomous generative sound installation in a tree at Green Man Festival.' },
   27: { role: 'PRODUCER', summary: 'Garance and the Mitochondries full-length album.' },
-  28: { role: 'CREATOR · COMPOSITION', summary: 'Participatory sound work tracing the changing soundscape of King’s Cross.' },
+  28: { role: 'COMPOSITION · SOUND INSTALLATION', summary: 'Public recordings of King’s Cross formed into a composition presented through a recycled multi-speaker installation and sculpture.' },
   29: { role: 'COMPOSITION · RECORDING · MIX', summary: 'Sojasun sonic identity for television, web and radio.' },
-  30: { role: 'CO-CREATOR · SOUND', summary: 'Flyfaction audio-visual work mixing animation, stills and live action.' },
+  30: { role: 'COMPOSER', summary: 'Original music for Flyfaction’s audio-visual work mixing animation, stills and live action.' },
   31: { role: 'RECORDING · MIX', summary: 'Jackamo Brown’s debut album, recorded live in a Hackney church.' },
   32: { role: 'COMPOSER · MUSIC SUPERVISOR · MIXER', summary: 'Original score and 5.1 mix for the short film.' },
   33: { year: '2011', role: 'EXECUTIVE PRODUCER · MIX ENGINEER', summary: 'Scroobius Pip’s solo album for Speech Development and Strange Famous Records.' },
-  34: { role: 'ARTIST · PRODUCTION', summary: 'Aloosh’s eight-track experimental indie-pop debut for Nature Scene Records.' },
+  34: { role: 'ARTIST · PRODUCER', summary: 'The first Aloosh EP, including Separate.' },
   35: { role: 'SONGWRITER · ARRANGER · REMIXER · MIX', summary: 'Palmer’s debut nu-disco release.' },
   36: { role: 'GUITAR', summary: 'Róisín Murphy’s Overpowered world tour.' },
   37: { year: '2008', role: 'PRODUCTION · MIX', summary: 'Dan Le Sac vs Scroobius Pip album featuring Thou Shalt Always Kill.' },
@@ -130,10 +147,18 @@ export const projectInfo: Record<number, ProjectInfo> = {
   49: { year: '2023', role: 'SOLO PERFORMER · SPATIAL SOUND', summary: 'SOMA Dvina, live electronics and real-time sound processing at Galerija ŠKUC.' },
   50: { year: '2024', role: 'SOLO PERFORMER · SPATIAL SOUND', summary: 'Electric cello, hexaphonic guitar tuner and guitar amplifiers spatialised across Cukrarna.' },
   51: { year: '2024', role: 'ATMOS MIX · MASTER', summary: 'Immersive mix and master for Olenc’s Nature Scene Records single.' },
+  52: { role: 'PRODUCER · MIX', summary: 'Limited 7-inch single for Nature Scene Records.' },
+  53: { role: 'ARTIST · PRODUCER · MIX', summary: 'Aloosh’s eight-track debut album for Nature Scene Records.' },
+  54: { role: 'ARTIST · PRODUCER · MIX', summary: 'Single from the Ceramic album.' },
+  55: { role: 'ARTIST · PRODUCER · MIX', summary: 'Aloosh single with a remix release and the second Ceramic film.' },
+  56: { year: '2022', role: 'ARTIST · PRODUCER · MIX', summary: 'Aloosh’s 2022 release, bringing together Waiting, Hold On and Servant.' },
+  57: { year: '2026', role: 'END-CREDIT SONG · MIX · ARRANGER', summary: 'Mix and arrangement for the film’s end-credit song.' },
+  58: { year: '2025', role: 'MASTERING', summary: 'Gugutke’s self-titled debut album for Celinka.si.' },
+  59: { year: '2022', role: 'PRE-PRODUCTION', summary: 'Chewy She’s Run After Boyz release.' },
 };
 
 export const categories: Record<number, Filter[]> = {
-  0: ['music', 'production'], 1: ['music', 'mastering'], 2: ['music', 'production'], 3: ['music', 'production'], 4: ['music', 'production'], 5: ['art'], 6: ['music', 'production'], 7: ['art', 'music', 'production'], 8: ['art'], 9: ['art'], 10: ['art'], 11: ['music', 'production'], 12: ['art'], 13: ['art'], 14: ['art', 'music'], 15: ['music', 'commercial'], 16: ['music', 'production'], 17: ['music', 'production'], 18: ['music', 'production'], 19: ['music', 'production'], 20: ['music', 'production'], 21: ['art'], 22: ['commercial', 'production'], 23: ['commercial', 'production'], 24: ['art'], 25: ['music', 'commercial'], 26: ['art'], 27: ['art'], 28: ['art'], 29: ['commercial', 'production'], 30: ['art'], 31: ['art'], 32: ['commercial', 'production'], 33: ['music', 'production'], 34: ['art'], 35: ['music', 'production'], 36: ['music', 'production'], 37: ['music', 'production'], 38: ['music', 'production'], 39: ['music'], 40: ['music', 'production'], 41: ['music', 'mastering'], 42: ['music', 'mastering'], 43: ['music', 'mastering'], 44: ['music', 'mastering'], 45: ['music', 'mastering'], 46: ['music', 'mastering'], 47: ['music', 'mastering'], 48: ['art', 'music'], 49: ['art', 'music'], 50: ['art', 'music'], 51: ['music', 'mastering', 'production'],
+  0: ['music', 'production'], 1: ['music', 'mastering'], 2: ['music', 'production'], 3: ['music', 'production'], 4: ['music', 'production'], 5: ['art'], 6: ['music', 'production'], 7: ['art', 'music', 'production'], 8: ['art'], 9: ['art'], 10: ['art'], 11: ['music', 'production'], 12: ['art'], 13: ['art'], 14: ['art', 'music'], 15: ['music', 'commercial'], 16: ['music', 'production'], 17: ['music', 'production'], 18: ['music', 'production'], 19: ['music', 'production'], 20: ['music', 'production'], 21: ['art'], 22: ['commercial', 'production'], 23: ['commercial', 'production'], 24: ['art'], 25: ['music', 'commercial'], 26: ['art'], 27: ['music', 'production'], 28: ['art'], 29: ['commercial', 'production'], 30: ['art'], 31: ['music', 'production'], 32: ['commercial', 'production'], 33: ['music', 'production'], 34: ['music', 'production'], 35: ['music', 'production'], 36: ['music', 'production'], 37: ['music', 'production'], 38: ['music', 'production'], 39: ['music'], 40: ['music', 'production'], 41: ['music', 'mastering'], 42: ['music', 'mastering'], 43: ['music', 'mastering'], 44: ['music', 'mastering'], 45: ['music', 'mastering'], 46: ['music', 'mastering'], 47: ['music', 'mastering'], 48: ['art', 'music'], 49: ['art', 'music'], 50: ['art', 'music'], 51: ['music', 'mastering', 'production'], 52: ['music', 'production'], 53: ['music', 'production'], 54: ['music', 'production'], 55: ['music', 'production'], 56: ['music', 'production'], 57: ['commercial', 'production'], 58: ['music', 'mastering'], 59: ['music', 'production'],
 };
 
 export const filters: { id: Filter; label: string }[] = [
@@ -141,6 +166,28 @@ export const filters: { id: Filter; label: string }[] = [
 ];
 
 export const localImage = (index: number) => {
+  const releaseCovers: Record<number, string> = {
+    0: '/media/projects/release-the-land-we-knew.jpg',
+    1: '/media/projects/release-intention-intensity.jpg',
+    2: '/media/projects/release-dysfunctional-vol2.jpg',
+    3: '/media/projects/release-where-spirit-rests.jpg',
+    4: '/media/projects/release-functional-vol1.jpg',
+    6: '/media/projects/release-crest.jpg',
+    11: '/media/projects/release-better-of-me.jpg',
+    19: '/media/projects/release-overload.jpg',
+    27: '/media/projects/release-un-puit-qui-fuit.jpg',
+    31: '/media/projects/release-oh-no-drift.jpg',
+    33: '/media/projects/release-distraction-pieces.jpg',
+    34: '/media/projects/aloosh-ep.jpg',
+    35: '/media/projects/release-takin-off.jpg',
+    37: '/media/projects/release-angles.jpg',
+    38: '/media/projects/release-astronaut.jpg',
+    42: '/media/projects/release-poletje-loops.jpg',
+    43: '/media/projects/release-portals-vol2.jpg',
+    44: '/media/projects/release-vrt.jpg',
+    45: '/media/projects/release-faded-worlds.jpg',
+    46: '/media/projects/release-pieces-collective-change.jpg',
+  };
   const masteringImages: Record<number, string> = {
     1: '/media/projects/mastering-intention-intensity-shuffle.jpg',
     41: '/media/projects/mastering-the-only-thing-i-know.jpg',
@@ -151,6 +198,7 @@ export const localImage = (index: number) => {
     46: '/media/projects/mastering-pieces-for-collective-change.jpg',
     47: '/media/projects/mastering-a-plea-for-tenderness.jpg',
   };
+  if (releaseCovers[index]) return releaseCovers[index];
   if (masteringImages[index]) return masteringImages[index];
   if (index === 3) return '/media/projects/where-the-spirit-rests.jpg';
   if (index === 4) return '/media/projects/functional-combinations-vol1-cover.jpg';
@@ -158,5 +206,25 @@ export const localImage = (index: number) => {
   if (index === 49) return '/media/projects/ropotarnica-xxix.jpg';
   if (index === 50) return '/media/projects/sound-explicit-cukrarna.jpg';
   if (index === 51) return '/media/projects/olenc-m-antarei.jpg';
+  if (index === 52) return '/media/projects/aloosh-separate.jpg';
+  if (index === 53) return '/media/projects/aloosh-ceramic.jpg';
+  if (index === 54) return '/media/projects/aloosh-time.jpg';
+  if (index === 55) return '/media/projects/aloosh-butter.jpg';
+  if (index === 56) return '/media/projects/aloosh-another-breakup.jpg';
+  if (index === 57) return '/media/projects/tiha-milost.jpg';
+  if (index === 58) return '/media/projects/gugutke.jpg';
+  if (index === 59) return '/media/projects/chewy-she-run-after-boyz.jpg';
+  if (index === 13) return '/media/projects/brez-upora.jpg';
+  if (index === 12) return '/media/projects/souvenir-razkitje-performance.jpg';
+  if (index === 14) return '/media/projects/souvenir-performance.jpg';
+  if (index === 21) return '/media/projects/souvenir-suvenir.jpg';
+  if (index === 20) return '/media/projects/hk119-imaginature.jpg';
+  if (index === 26) return '/media/projects/pwca-tree.jpg';
+  if (index === 15) return '/media/projects/seq-performance.jpg';
+  if (index === 24) return '/media/projects/idu-performance.jpg';
+  if (index === 28) return '/media/projects/sound-kings-film.jpg';
+  if (index === 30) return '/media/projects/compulse-film.jpg';
+  if (index === 39) return '/media/projects/unknown-devices-performance.jpg';
+  if (index === 40) return '/media/projects/playing-god.jpg';
   return index === 35 ? fallbackImages[index] : `/media/projects/${String(index + 1).padStart(3, '0')}.jpg`;
 };
