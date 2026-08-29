@@ -157,7 +157,7 @@ export const projects: Project[] = [
     "title": "The World as a Composer",
     "timelineYear": 2021,
     "year": "2021",
-    "role": "CONCEPT · SOUND · SPATIALISATION",
+    "role": "CREATOR",
     "summary": "Movement data and Covid-era speech reshaped into a digital sound work.",
     "categories": [
       "art"
@@ -622,7 +622,7 @@ export const projects: Project[] = [
     "id": 31,
     "title": "Oh No the Drift Of the World",
     "timelineYear": 2012,
-    "role": "RECORDING · MIX",
+    "role": "PRODUCER · RECORDING · MIX",
     "summary": "Jackamo Brown’s debut album, recorded live in a Hackney church.",
     "categories": [
       "music",
@@ -750,7 +750,7 @@ export const projects: Project[] = [
     "media": {
       "video": {
         "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/l8UfvHnna38?rel=0&modestbranding=1&playsinline=1&controls=1"
+        "src": "https://www.youtube.com/embed/l8UfvHnna38?si=d9iyOcJN_cncsvBi&controls=0"
       }
     }
   },

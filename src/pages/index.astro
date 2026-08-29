@@ -38,6 +38,11 @@ const projects = projectRecords.map((project) => ({
           const [firstMedia, secondMedia] = project.mediaFaces;
           const firstVideoId = firstMedia?.provider === 'youtube' ? firstMedia.src.match(/embed\/([^?]+)/)?.[1] : undefined;
           const secondVideoId = secondMedia?.provider === 'youtube' ? secondMedia.src.match(/embed\/([^?]+)/)?.[1] : undefined;
+          const videoPosition = firstMedia && ['youtube', 'vimeo'].includes(firstMedia.provider)
+            ? 3
+            : secondMedia && ['youtube', 'vimeo'].includes(secondMedia.provider)
+              ? 4
+              : undefined;
           return <article class="slice" data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
             <div class="slab">
               <button class="face front" type="button" data-action="info" aria-label={`Show information for ${project.title}`}>
@@ -45,7 +50,11 @@ const projects = projectRecords.map((project) => ({
               </button>
               <button class="face right" type="button" data-action="media" data-media-count={project.mediaFaces.length} aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Project information for ${project.title}`}>
                 <strong>{project.title}</strong>
-                <small>{project.role}</small>
+                <small>
+                  {project.role.split(' · ').map((role) => (
+                    <span>{role}</span>
+                  ))}
+                </small>
                 <em>{project.summary}</em>
               </button>
               <div class="face left media-face neutral" data-position="4" style={`background-image: url(${project.image})`}>
@@ -58,6 +67,7 @@ const projects = projectRecords.map((project) => ({
               </div>
             </div>
             <button class="media-advance" type="button" aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Reset ${project.title}`}></button>
+            {videoPosition && <button class="video-expand" type="button" data-video-position={videoPosition} aria-label={`Expand ${project.title} video`}>[ ]</button>}
           </article>;
         })}
       </section>
@@ -69,6 +79,8 @@ const projects = projectRecords.map((project) => ({
       const positions = ['is-info', 'is-media-1', 'is-media-2'];
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const mediaLoadTimers = new WeakMap();
+      const interactionTimers = new WeakMap();
+      const lockedCubes = new WeakSet();
       let isFiltering = false;
       let activeFilter = 'all';
 
@@ -78,14 +90,84 @@ const projects = projectRecords.map((project) => ({
 
       function resetCube(cube) {
         window.clearTimeout(mediaLoadTimers.get(cube));
+        window.clearTimeout(interactionTimers.get(cube));
         mediaLoadTimers.delete(cube);
+        interactionTimers.delete(cube);
+        lockedCubes.delete(cube);
         cube.classList.remove(...positions, 'is-atmos');
         cube.querySelectorAll('.media-slot').forEach(clearSlot);
+      }
+
+      function lockCube(cube) {
+        if (reduceMotion) return;
+        window.clearTimeout(interactionTimers.get(cube));
+        lockedCubes.add(cube);
+        const timer = window.setTimeout(() => {
+          lockedCubes.delete(cube);
+          interactionTimers.delete(cube);
+        }, 420);
+        interactionTimers.set(cube, timer);
       }
 
       function resetProjects() {
         cubes.forEach(resetCube);
       }
+
+      function openVideoZoom(slot) {
+        const player = slot.querySelector('.embedded-player');
+        if (!(player instanceof HTMLElement)) return;
+        // Keep dismissal under our control. Native `auto` light-dismiss can close
+        // the popover before the outside click reaches this script, allowing the
+        // click to fall through to the cube and reset its media face.
+        player.setAttribute('popover', 'manual');
+        player.classList.add('video-zoomed');
+        player.showPopover();
+      }
+
+      function resumeVideoPlayer(player) {
+        const frame = player.querySelector('iframe');
+        const slot = player.closest('.media-slot');
+        if (!(frame instanceof HTMLIFrameElement) || !(slot instanceof HTMLElement)) return;
+        const targetOrigin = new URL(frame.src).origin;
+        const message = slot.dataset.provider === 'youtube'
+          ? JSON.stringify({ event: 'command', func: 'playVideo', args: [] })
+          : { method: 'play' };
+        frame.contentWindow?.postMessage(message, targetOrigin);
+        window.setTimeout(() => frame.contentWindow?.postMessage(message, targetOrigin), 150);
+      }
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (target instanceof Element) {
+          const expandButton = target.closest('.video-expand');
+          if (expandButton) {
+            const cube = expandButton.closest('.slice');
+            const slot = cube?.querySelector(`.media-slot[data-position="${expandButton.dataset.videoPosition}"]`);
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            if (slot instanceof HTMLElement) openVideoZoom(slot);
+            return;
+          }
+        }
+        const expandedPlayer = document.querySelector('.video-zoomed:popover-open');
+        if (expandedPlayer && !event.composedPath().includes(expandedPlayer)) {
+          event.stopPropagation();
+          if (expandedPlayer instanceof HTMLElement) {
+            expandedPlayer.hidePopover();
+            resumeVideoPlayer(expandedPlayer);
+          }
+        }
+      }, { capture: true });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        const expandedPlayer = document.querySelector('.video-zoomed:popover-open');
+        if (!(expandedPlayer instanceof HTMLElement)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        expandedPlayer.hidePopover();
+        resumeVideoPlayer(expandedPlayer);
+      }, { capture: true });
 
       function mountEmbed(slot) {
         if (slot.firstChild) return;
@@ -94,14 +176,19 @@ const projects = projectRecords.map((project) => ({
           const player = document.createElement('span');
           const isYoutube = slot.dataset.provider === 'youtube';
           player.className = `embedded-player ${isYoutube ? 'youtube' : 'vimeo'}`;
+          player.addEventListener('toggle', (event) => {
+            if (event.newState !== 'closed') return;
+            player.classList.remove('video-zoomed');
+            resumeVideoPlayer(player);
+          });
           const videoUrl = new URL(slot.dataset.src);
           videoUrl.searchParams.set('autoplay', '1');
           if (isYoutube) {
             videoUrl.searchParams.set('controls', '0');
+            videoUrl.searchParams.set('cc_load_policy', '0');
             videoUrl.searchParams.set('enablejsapi', '1');
             videoUrl.searchParams.set('iv_load_policy', '3');
             videoUrl.searchParams.set('modestbranding', '1');
-            videoUrl.searchParams.set('origin', window.location.origin);
             videoUrl.searchParams.set('playsinline', '1');
             videoUrl.searchParams.set('rel', '0');
           } else {
@@ -112,9 +199,16 @@ const projects = projectRecords.map((project) => ({
           frame.src = videoUrl.toString();
           frame.title = `${slot.dataset.title} video`;
           frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+          frame.referrerPolicy = 'strict-origin-when-cross-origin';
           frame.allowFullscreen = true;
           if (isYoutube) frame.addEventListener('load', () => {
-            frame.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: 'playVideo', args: [] }), videoUrl.origin);
+            const sendCommand = (func, args = []) => frame.contentWindow?.postMessage(
+              JSON.stringify({ event: 'command', func, args }),
+              videoUrl.origin,
+            );
+            sendCommand('playVideo');
+            window.setTimeout(() => sendCommand('unloadModule', ['captions']), 100);
+            window.setTimeout(() => sendCommand('unloadModule', ['captions']), 800);
           });
           player.append(frame);
           slot.addEventListener('click', (event) => {
@@ -255,6 +349,7 @@ const projects = projectRecords.map((project) => ({
         }
         if (position === 4) cube.classList.add('is-media-2');
         if (position > 2) loadMediaAfterRotation(cube, position);
+        lockCube(cube);
       }
 
       function animate(element, keyframes, duration) {
@@ -331,6 +426,12 @@ const projects = projectRecords.map((project) => ({
         cube.addEventListener('click', (event) => {
           const target = event.target;
           if (!(target instanceof Element)) return;
+          if (target.closest('.video-expand')) return;
+          if (lockedCubes.has(cube)) {
+            event.preventDefault();
+            event.stopPropagation();
+            return;
+          }
           if (cube.classList.contains('is-info')
             && !Number(info.dataset.mediaCount)
             && target.closest('.right')) {
@@ -343,8 +444,15 @@ const projects = projectRecords.map((project) => ({
             resetCube(cube);
           }
         }, { capture: true });
-        front.addEventListener('click', () => setCubePosition(cube, 2));
+        front.addEventListener('click', () => {
+          if (!lockedCubes.has(cube)) setCubePosition(cube, 2);
+        });
         info.addEventListener('click', () => {
+          if (lockedCubes.has(cube)) return;
+          if (!cube.classList.contains('is-info')) {
+            setCubePosition(cube, 2);
+            return;
+          }
           if (Number(info.dataset.mediaCount)) {
             setCubePosition(cube, 3);
           } else {
@@ -352,6 +460,7 @@ const projects = projectRecords.map((project) => ({
           }
         });
         mediaAdvance?.addEventListener('click', () => {
+          if (lockedCubes.has(cube)) return;
           if (Number(info.dataset.mediaCount)) {
             setCubePosition(cube, 3);
           } else {
@@ -360,7 +469,8 @@ const projects = projectRecords.map((project) => ({
         });
         const firstMediaFace = cube.querySelector('.media-face[data-position="3"]');
         firstMediaFace.addEventListener('click', (event) => {
-          if (event.target.closest('.embedded-player, .spotify-link, .atmos-apple-link')) return;
+          if (lockedCubes.has(cube)) return;
+          if (event.target.closest('.embedded-player, .video-expand, .spotify-link, .atmos-apple-link')) return;
           if (firstMediaFace.dataset.hasNext === 'true') {
             setCubePosition(cube, 4);
           } else {
