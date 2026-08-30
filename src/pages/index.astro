@@ -33,6 +33,22 @@ const projects = projectRecords.map((project) => ({
         })}
       </nav>
 
+      <aside class="social-links" aria-label="Social links">
+        <a href="https://www.instagram.com/alastair_mcneill_/" target="_blank" rel="me noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4.25"></circle>
+            <circle class="social-dot" cx="17.4" cy="6.7" r="1"></circle>
+          </svg>
+        </a>
+        <a href="https://www.patreon.com/alastairmcneill" target="_blank" rel="me noopener noreferrer" aria-label="Patreon">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect class="social-fill" x="3" y="3" width="4" height="18"></rect>
+            <circle class="social-fill" cx="15" cy="9" r="6"></circle>
+          </svg>
+        </a>
+      </aside>
+
       <section class="project-grid">
         {projects.map((project) => {
           const [firstMedia, secondMedia] = project.mediaFaces;
@@ -81,6 +97,7 @@ const projects = projectRecords.map((project) => ({
       const mediaLoadTimers = new WeakMap();
       const interactionTimers = new WeakMap();
       const lockedCubes = new WeakSet();
+      const mobileLayout = window.matchMedia('(max-width: 540px)');
       let isFiltering = false;
       let activeFilter = 'all';
 
@@ -94,7 +111,7 @@ const projects = projectRecords.map((project) => ({
         mediaLoadTimers.delete(cube);
         interactionTimers.delete(cube);
         lockedCubes.delete(cube);
-        cube.classList.remove(...positions, 'is-atmos');
+        cube.classList.remove(...positions, 'is-atmos', 'is-mobile-selected');
         cube.querySelectorAll('.media-slot').forEach(clearSlot);
       }
 
@@ -111,6 +128,14 @@ const projects = projectRecords.map((project) => ({
 
       function resetProjects() {
         cubes.forEach(resetCube);
+      }
+
+      function selectMobileCube(cube) {
+        cubes.forEach((candidate) => {
+          if (candidate !== cube) resetCube(candidate);
+        });
+        cube.classList.add('is-mobile-selected');
+        window.requestAnimationFrame(() => cube.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }));
       }
 
       function openVideoZoom(slot) {
@@ -427,6 +452,14 @@ const projects = projectRecords.map((project) => ({
           const target = event.target;
           if (!(target instanceof Element)) return;
           if (target.closest('.video-expand')) return;
+          if (mobileLayout.matches
+            && Number(info.dataset.mediaCount)
+            && !cube.classList.contains('is-mobile-selected')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            selectMobileCube(cube);
+            return;
+          }
           if (lockedCubes.has(cube)) {
             event.preventDefault();
             event.stopPropagation();
