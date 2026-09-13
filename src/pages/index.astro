@@ -47,6 +47,9 @@ const projects = projectRecords.map((project) => ({
             <circle class="social-fill" cx="15" cy="9" r="6"></circle>
           </svg>
         </a>
+        <a class="soundbetter-link" href="https://soundbetter.com/profiles/216544-alastair-mcneill" target="_blank" rel="me noopener noreferrer" aria-label="SoundBetter">
+          <img src="https://soundbetter.com/favicon.ico" alt="" width="16" height="16" />
+        </a>
       </aside>
 
       <section class="project-grid">
@@ -92,6 +95,12 @@ const projects = projectRecords.map((project) => ({
     <script>
       const main = document.querySelector('.project-field');
       const cubes = [...document.querySelectorAll('.slice')];
+      const runtimeWindow = window as Window & { projectFieldController?: AbortController };
+      runtimeWindow.projectFieldController?.abort();
+      const projectFieldController = new AbortController();
+      const eventSignal = projectFieldController.signal;
+      runtimeWindow.projectFieldController = projectFieldController;
+      import.meta.hot?.dispose(() => projectFieldController.abort());
       const positions = ['is-info', 'is-media-1', 'is-media-2'];
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const mediaLoadTimers = new WeakMap();
@@ -103,6 +112,63 @@ const projects = projectRecords.map((project) => ({
 
       function clearSlot(slot) {
         slot.replaceChildren();
+        slot.onclick = null;
+        slot.removeAttribute('data-mounted');
+      }
+
+      function clearCubeMedia(cube) {
+        cube.querySelectorAll('.media-slot').forEach(clearSlot);
+        cube.querySelectorAll('.audio-overlay, .audio-media-turn').forEach((element) => element.remove());
+      }
+
+      function alignAudioOverlay(player) {
+        const cube = player.closest('.slice');
+        const position = player.dataset.position;
+        const face = cube?.querySelector(`.media-face[data-position="${position}"]`);
+        if (!(cube instanceof HTMLElement) || !(face instanceof HTMLElement)) return;
+        const cubeRect = cube.getBoundingClientRect();
+        const faceRect = face.getBoundingClientRect();
+        const size = Math.min(cubeRect.width, cubeRect.height) * .92;
+        player.style.left = `${faceRect.left - cubeRect.left + (faceRect.width - size) / 2}px`;
+        player.style.top = `${faceRect.top - cubeRect.top + (faceRect.height - size) / 2}px`;
+        player.style.width = `${size}px`;
+        player.style.height = `${size}px`;
+      }
+
+      function mountAudioOverlay(slot, player) {
+        const cube = slot.closest('.slice');
+        const mediaFace = slot.closest('.media-face');
+        if (!(cube instanceof HTMLElement) || !(mediaFace instanceof HTMLElement)) return false;
+        player.classList.add('audio-overlay');
+        const frame = player.querySelector('iframe');
+        if (frame instanceof HTMLIFrameElement) {
+          player.classList.add('is-loading');
+          const revealPlayer = () => {
+            player.classList.remove('is-loading');
+            player.classList.add('is-ready');
+          };
+          frame.addEventListener('load', revealPlayer, { once: true, signal: eventSignal });
+          // A cached cross-origin iframe can complete before its load event is
+          // observable by the parent. Never leave a remounted player hidden.
+          window.setTimeout(revealPlayer, 1200);
+        }
+        player.dataset.position = slot.dataset.position;
+        cube.append(player);
+        requestAnimationFrame(() => alignAudioOverlay(player));
+        window.setTimeout(() => alignAudioOverlay(player), 450);
+
+        if (mediaFace.dataset.hasNext !== 'true') return true;
+        const advance = document.createElement('button');
+        advance.type = 'button';
+        advance.className = 'media-turn audio-media-turn';
+        advance.setAttribute('aria-label', `Show next media for ${slot.dataset.title}`);
+        advance.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setCubePosition(cube, 4);
+        }, { signal: eventSignal });
+        cube.append(advance);
+        return true;
       }
 
       function resetCube(cube) {
@@ -112,7 +178,7 @@ const projects = projectRecords.map((project) => ({
         interactionTimers.delete(cube);
         lockedCubes.delete(cube);
         cube.classList.remove(...positions, 'is-atmos', 'is-mobile-selected');
-        cube.querySelectorAll('.media-slot').forEach(clearSlot);
+        clearCubeMedia(cube);
       }
 
       function lockCube(cube) {
@@ -128,6 +194,22 @@ const projects = projectRecords.map((project) => ({
 
       function resetProjects() {
         cubes.forEach(resetCube);
+      }
+
+      // Astro can re-run this module during development without replacing the
+      // current DOM. Reset any players created by the previous controller so
+      // no aborted iframe handlers or stale mounted state survive hot reload.
+      resetProjects();
+
+      function ensureProjectImage(cube) {
+        const image = cube.querySelector('.front img');
+        if (!(image instanceof HTMLImageElement)) return;
+        image.loading = 'eager';
+        if (image.complete && image.naturalWidth === 0) {
+          const source = image.currentSrc || image.src;
+          image.src = '';
+          image.src = source;
+        }
       }
 
       function selectMobileCube(cube) {
@@ -182,7 +264,7 @@ const projects = projectRecords.map((project) => ({
             resumeVideoPlayer(expandedPlayer);
           }
         }
-      }, { capture: true });
+      }, { capture: true, signal: eventSignal });
 
       document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return;
@@ -192,10 +274,11 @@ const projects = projectRecords.map((project) => ({
         event.stopPropagation();
         expandedPlayer.hidePopover();
         resumeVideoPlayer(expandedPlayer);
-      }, { capture: true });
+      }, { capture: true, signal: eventSignal });
 
       function mountEmbed(slot) {
-        if (slot.firstChild) return;
+        if (slot.dataset.mounted === 'true') return;
+        slot.dataset.mounted = 'true';
         if (slot.dataset.provider === 'youtube' || slot.dataset.provider === 'vimeo') {
           const frame = document.createElement('iframe');
           const player = document.createElement('span');
@@ -205,10 +288,16 @@ const projects = projectRecords.map((project) => ({
             if (event.newState !== 'closed') return;
             player.classList.remove('video-zoomed');
             resumeVideoPlayer(player);
-          });
+          }, { signal: eventSignal });
           const videoUrl = new URL(slot.dataset.src);
           videoUrl.searchParams.set('autoplay', '1');
           if (isYoutube) {
+            // YouTube now relies on the embedding page identity for player
+            // configuration. Supplying both values also avoids Error 153 in
+            // browsers that otherwise omit part of the referrer chain.
+            videoUrl.hostname = 'www.youtube.com';
+            videoUrl.searchParams.set('origin', window.location.origin);
+            videoUrl.searchParams.set('widget_referrer', window.location.href);
             videoUrl.searchParams.set('controls', '0');
             videoUrl.searchParams.set('cc_load_policy', '0');
             videoUrl.searchParams.set('enablejsapi', '1');
@@ -221,7 +310,6 @@ const projects = projectRecords.map((project) => ({
             videoUrl.searchParams.set('byline', '0');
             videoUrl.searchParams.set('portrait', '0');
           }
-          frame.src = videoUrl.toString();
           frame.title = `${slot.dataset.title} video`;
           frame.allow = 'autoplay; encrypted-media; picture-in-picture';
           frame.referrerPolicy = 'strict-origin-when-cross-origin';
@@ -231,44 +319,45 @@ const projects = projectRecords.map((project) => ({
               JSON.stringify({ event: 'command', func, args }),
               videoUrl.origin,
             );
+            const disableCaptions = () => {
+              sendCommand('setOption', ['captions', 'track', {}]);
+              sendCommand('setOption', ['cc', 'track', {}]);
+              sendCommand('unloadModule', ['captions']);
+              sendCommand('unloadModule', ['cc']);
+            };
             sendCommand('playVideo');
-            window.setTimeout(() => sendCommand('unloadModule', ['captions']), 100);
-            window.setTimeout(() => sendCommand('unloadModule', ['captions']), 800);
-          });
+            // YouTube can restore the viewer's saved caption preference after
+            // its first paint, so repeat the off command as the player settles.
+            [100, 500, 1200, 2500].forEach((delay) => {
+              window.setTimeout(disableCaptions, delay);
+            });
+          }, { signal: eventSignal });
           player.append(frame);
-          slot.addEventListener('click', (event) => {
+          slot.append(player);
+          // Cross-origin iframe navigation starts only after the player is in
+          // its final DOM position. This avoids WebKit cancelling a moved
+          // loading iframe and leaving an about:blank black face.
+          frame.src = videoUrl.toString();
+          slot.onclick = (event) => {
             event.preventDefault();
             event.stopPropagation();
             const cube = slot.closest('.slice');
             if (cube) resetCube(cube);
-          });
-          slot.append(player);
+          };
           return;
         }
         if (slot.dataset.provider === 'soundcloud') {
           const frame = document.createElement('iframe');
           const player = document.createElement('span');
           player.className = 'embedded-player soundcloud';
-          frame.src = slot.dataset.src;
           frame.title = `${slot.dataset.title} audio`;
           frame.allow = 'autoplay';
           player.append(frame);
-          const mediaFace = slot.closest('.media-face');
-          if (mediaFace?.dataset.hasNext === 'true') {
-            const advance = document.createElement('button');
-            advance.type = 'button';
-            advance.className = 'media-turn';
-            advance.setAttribute('aria-label', `Show next media for ${slot.dataset.title}`);
-            advance.addEventListener('click', (event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              const cube = slot.closest('.slice');
-              if (cube) setCubePosition(cube, 4);
-            });
-            slot.append(advance, player);
+          if (!mountAudioOverlay(slot, player)) {
+            slot.removeAttribute('data-mounted');
             return;
           }
-          slot.append(player);
+          frame.src = slot.dataset.src;
           return;
         }
         if (slot.dataset.provider === 'spotify') {
@@ -291,11 +380,11 @@ const projects = projectRecords.map((project) => ({
           const frame = document.createElement('iframe');
           const player = document.createElement('span');
           player.className = 'embedded-player apple';
-          frame.src = slot.dataset.src;
           frame.title = `${slot.dataset.title} on Apple Music`;
           frame.allow = 'autoplay *; encrypted-media *; fullscreen *; clipboard-write';
           player.append(frame);
           slot.append(player);
+          frame.src = slot.dataset.src;
           return;
         }
         if (slot.dataset.provider === 'atmos') {
@@ -327,37 +416,39 @@ const projects = projectRecords.map((project) => ({
         const frame = document.createElement('iframe');
         const player = document.createElement('span');
         player.className = 'embedded-player bandcamp';
-        frame.src = slot.dataset.src.replace('/transparent=true/', '/tracklist=false/artwork=large/transparent=true/');
+        const source = slot.dataset.src
+          .replace('/transparent=true/', '/minimal=true/transparent=true/');
         frame.title = `${slot.dataset.title} audio`;
-        frame.allow = 'encrypted-media; picture-in-picture';
+        frame.allow = 'autoplay; encrypted-media; picture-in-picture';
         player.append(frame);
-        const mediaFace = slot.closest('.media-face');
-        if (mediaFace?.dataset.hasNext === 'true') {
-          const advance = document.createElement('button');
-          advance.type = 'button';
-          advance.className = 'media-turn';
-          advance.setAttribute('aria-label', `Show next media for ${slot.dataset.title}`);
-          advance.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            const cube = slot.closest('.slice');
-            if (cube) setCubePosition(cube, 4);
-          });
-          slot.append(advance, player);
+        if (!mountAudioOverlay(slot, player)) {
+          slot.removeAttribute('data-mounted');
           return;
         }
-        slot.append(player);
+        // Start the cross-origin navigation only after the iframe is in its
+        // final DOM position. Moving a loading Bandcamp iframe can cancel its
+        // navigation and leave an invisible about:blank frame in WebKit.
+        frame.src = source;
       }
 
       function loadMediaAfterRotation(cube, position) {
         window.clearTimeout(mediaLoadTimers.get(cube));
+        const slot = cube.querySelector(`.media-slot[data-position="${position}"]`);
+        // Video autoplay has to be initiated while the click still carries
+        // user activation. The iframe remains lazy—it is only created for the
+        // selected cube—but waiting for the visual rotation to finish causes
+        // browsers to reject playback and leaves our control-free player black.
+        if (slot?.dataset.provider === 'youtube' || slot?.dataset.provider === 'vimeo') {
+          mountEmbed(slot);
+          return;
+        }
         const delay = reduceMotion ? 0 : 430;
         const timer = window.setTimeout(() => {
           const isStillShowing = (position === 3 && cube.classList.contains('is-media-1'))
             || (position === 4 && cube.classList.contains('is-media-2'));
           if (!isStillShowing) return;
-          const slot = cube.querySelector(`.media-slot[data-position="${position}"]`);
-          if (slot) mountEmbed(slot);
+          const delayedSlot = cube.querySelector(`.media-slot[data-position="${position}"]`);
+          if (delayedSlot) mountEmbed(delayedSlot);
         }, delay);
         mediaLoadTimers.set(cube, timer);
       }
@@ -366,7 +457,7 @@ const projects = projectRecords.map((project) => ({
         cubes.forEach((item) => { if (item !== cube) resetCube(item); });
         window.clearTimeout(mediaLoadTimers.get(cube));
         cube.classList.remove(...positions);
-        cube.querySelectorAll('.media-slot').forEach(clearSlot);
+        clearCubeMedia(cube);
         if (position === 2) cube.classList.add('is-info');
         if (position === 3) {
           cube.classList.add('is-media-1');
@@ -393,6 +484,7 @@ const projects = projectRecords.map((project) => ({
         const nextVisible = new Set(nextFilter === 'all'
           ? cubes
           : cubes.filter((cube) => cube.dataset.categories.split(' ').includes(nextFilter)));
+        nextVisible.forEach(ensureProjectImage);
         const exiting = cubes.filter((cube) => !cube.hidden && !nextVisible.has(cube));
 
         resetProjects();
@@ -442,7 +534,7 @@ const projects = projectRecords.map((project) => ({
         });
         activeFilter = nextFilter;
         filterProjects(nextFilter);
-      });
+      }, { signal: eventSignal });
 
       cubes.forEach((cube) => {
         const front = cube.querySelector('.front');
@@ -476,10 +568,10 @@ const projects = projectRecords.map((project) => ({
             event.stopPropagation();
             resetCube(cube);
           }
-        }, { capture: true });
+        }, { capture: true, signal: eventSignal });
         front.addEventListener('click', () => {
           if (!lockedCubes.has(cube)) setCubePosition(cube, 2);
-        });
+        }, { signal: eventSignal });
         info.addEventListener('click', () => {
           if (lockedCubes.has(cube)) return;
           if (!cube.classList.contains('is-info')) {
@@ -491,7 +583,7 @@ const projects = projectRecords.map((project) => ({
           } else {
             resetCube(cube);
           }
-        });
+        }, { signal: eventSignal });
         mediaAdvance?.addEventListener('click', () => {
           if (lockedCubes.has(cube)) return;
           if (Number(info.dataset.mediaCount)) {
@@ -499,7 +591,7 @@ const projects = projectRecords.map((project) => ({
           } else {
             resetCube(cube);
           }
-        });
+        }, { signal: eventSignal });
         const firstMediaFace = cube.querySelector('.media-face[data-position="3"]');
         firstMediaFace.addEventListener('click', (event) => {
           if (lockedCubes.has(cube)) return;
@@ -509,8 +601,14 @@ const projects = projectRecords.map((project) => ({
           } else {
             resetCube(cube);
           }
-        });
+        }, { signal: eventSignal });
       });
+
+      window.addEventListener('resize', () => {
+        document.querySelectorAll('.audio-overlay').forEach((player) => {
+          if (player instanceof HTMLElement) alignAudioOverlay(player);
+        });
+      }, { passive: true, signal: eventSignal });
 
       main.addEventListener('click', (event) => {
         const target = event.target;
@@ -519,7 +617,7 @@ const projects = projectRecords.map((project) => ({
         if (cube) return;
         if (target.closest('.filter-nav')) return;
         resetProjects();
-      }, { capture: true });
+      }, { capture: true, signal: eventSignal });
     </script>
   </body>
 </html>

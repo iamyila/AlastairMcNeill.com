@@ -321,7 +321,25 @@ export const projects: Project[] = [
   },
   {
     "id": 14,
-    "title": "Souvenir",
+    "title": "Souvenir — Album",
+    "timelineYear": 2017,
+    "role": "PRODUCER",
+    "summary": "Yila’s soundtrack album for the Souvenir musical-theatre project.",
+    "categories": [
+      "music",
+      "production"
+    ],
+    "image": "/media/projects/release-souvenir.jpg",
+    "media": {
+      "audio": {
+        "provider": "bandcamp",
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3565290909/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+      }
+    }
+  },
+  {
+    "id": 63,
+    "title": "Souvenir — Live Show",
     "timelineYear": 2018,
     "role": "PRODUCER",
     "summary": "Eight-piece multimedia musical theatre with dual projection and CRT screens.",
@@ -401,7 +419,7 @@ export const projects: Project[] = [
       "music",
       "production"
     ],
-    "image": "/media/projects/019.jpg",
+    "image": "/media/projects/roisin-hairless-toys.jpg",
     "media": {
       "video": {
         "provider": "youtube",
@@ -422,8 +440,8 @@ export const projects: Project[] = [
     "image": "/media/projects/release-overload.jpg",
     "media": {
       "audio": {
-        "provider": "soundcloud",
-        "src": "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/460817271&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"
+        "provider": "bandcamp",
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=1860250825/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -629,7 +647,12 @@ export const projects: Project[] = [
       "production"
     ],
     "image": "/media/projects/release-oh-no-drift.jpg",
-    "media": {}
+    "media": {
+      "audio": {
+        "provider": "bandcamp",
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2961849578/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+      }
+    }
   },
   {
     "id": 32,
@@ -709,7 +732,7 @@ export const projects: Project[] = [
       "music",
       "production"
     ],
-    "image": "/media/projects/037.jpg",
+    "image": "/media/projects/roisin-overpowered.jpg",
     "media": {
       "video": {
         "provider": "youtube",
@@ -1014,8 +1037,8 @@ export const projects: Project[] = [
     "image": "/media/projects/aloosh-ceramic.jpg",
     "media": {
       "audio": {
-        "provider": "soundcloud",
-        "src": "https://w.soundcloud.com/player/?visual=true&url=https%3A%2F%2Fapi.soundcloud.com%2Fplaylists%2F1830102&show_artwork=true&auto_play=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+        "provider": "bandcamp",
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2138073833/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -1132,6 +1155,57 @@ export const projects: Project[] = [
       "audio": {
         "provider": "bandcamp",
         "src": "https://bandcamp.com/EmbeddedPlayer/album=2714683916/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+      }
+    }
+  },
+  {
+    "id": 60,
+    "title": "Leftfield — EU Tour",
+    "timelineYear": 2024,
+    "role": "PLAYBACK TECHNICIAN",
+    "summary": "Playback technician for Leftfield’s European live tour.",
+    "categories": [
+      "music",
+      "commercial"
+    ],
+    "image": "/media/projects/leftfield-2024-tour.jpg",
+    "media": {
+      "video": {
+        "provider": "youtube",
+        "src": "https://www.youtube-nocookie.com/embed/O2BXNdH9iDk?rel=0&modestbranding=1&playsinline=1&controls=1"
+      }
+    }
+  },
+  {
+    "id": 61,
+    "title": "Home — BLINK Dance Theatre",
+    "timelineYear": 2026,
+    "role": "COMPOSER",
+    "summary": "Original music for BLINK Dance Theatre’s new work, Home.",
+    "categories": [
+      "art",
+      "music",
+      "commercial"
+    ],
+    "image": "/media/projects/blink-home-current-team.jpg",
+    "media": {}
+  },
+  {
+    "id": 62,
+    "title": "Elvis Died of Burgers — BLINK Dance Theatre",
+    "timelineYear": 2023,
+    "role": "COMPOSER",
+    "summary": "Original music for BLINK Dance Theatre’s touring performance.",
+    "categories": [
+      "art",
+      "music",
+      "commercial"
+    ],
+    "image": "/media/projects/blink-elvis-cast.jpg",
+    "media": {
+      "video": {
+        "provider": "vimeo",
+        "src": "https://player.vimeo.com/video/1080150277?h=a7ad7b6d63"
       }
     }
   }
