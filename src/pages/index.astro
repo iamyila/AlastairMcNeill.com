@@ -62,6 +62,9 @@ const projects = projectRecords.map((project) => ({
             : secondMedia && ['youtube', 'vimeo'].includes(secondMedia.provider)
               ? 4
               : undefined;
+          const audioOverlays = project.mediaFaces
+            .map((media, index) => ({ media, position: index + 3 }))
+            .filter(({ media }) => ['bandcamp', 'soundcloud'].includes(media.provider));
           return <article class="slice" data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
             <div class="slab">
               <button class="face front" type="button" data-action="info" aria-label={`Show information for ${project.title}`}>
@@ -85,6 +88,30 @@ const projects = projectRecords.map((project) => ({
                 {firstMedia && <div class="media-slot" data-position="3" data-provider={firstMedia.provider} data-src={firstMedia.src} data-image={project.image} data-video-id={firstVideoId} data-title={project.title}></div>}
               </div>
             </div>
+            {audioOverlays.map(({ media, position }) => {
+              const source = media.provider === 'bandcamp'
+                ? media.src.replace('/transparent=true/', '/minimal=true/transparent=true/')
+                : media.src;
+              return <span
+                class={`embedded-player ${media.provider} audio-overlay`}
+                data-position={position}
+                aria-hidden="true"
+              >
+                {media.provider === 'bandcamp'
+                  ? <object
+                      data={source}
+                      data-src={source}
+                      type="text/html"
+                      aria-label={`${project.title} audio`}
+                    ></object>
+                  : <iframe
+                      src={source}
+                      loading="lazy"
+                      title={`${project.title} audio`}
+                      allow="autoplay"
+                    ></iframe>}
+              </span>;
+            })}
             <button class="media-advance" type="button" aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Reset ${project.title}`}></button>
             {videoPosition && <button class="video-expand" type="button" data-video-position={videoPosition} aria-label={`Expand ${project.title} video`}>[ ]</button>}
           </article>;
@@ -118,7 +145,16 @@ const projects = projectRecords.map((project) => ({
 
       function clearCubeMedia(cube) {
         cube.querySelectorAll('.media-slot').forEach(clearSlot);
-        cube.querySelectorAll('.audio-overlay, .audio-media-turn').forEach((element) => element.remove());
+        cube.querySelectorAll('.audio-overlay').forEach((player) => {
+          const wasActive = player.classList.contains('is-active');
+          player.classList.remove('is-active');
+          player.setAttribute('aria-hidden', 'true');
+          const bandcampPlayer = player.querySelector('object[data-src]');
+          if (wasActive && bandcampPlayer instanceof HTMLObjectElement) {
+            bandcampPlayer.data = 'about:blank';
+          }
+        });
+        cube.querySelectorAll('.audio-media-turn').forEach((element) => element.remove());
       }
 
       function alignAudioOverlay(player) {
@@ -135,37 +171,39 @@ const projects = projectRecords.map((project) => ({
         player.style.height = `${size}px`;
       }
 
-      function mountAudioOverlay(slot, player) {
+      function mountAudioOverlay(slot) {
         const cube = slot.closest('.slice');
         const mediaFace = slot.closest('.media-face');
         if (!(cube instanceof HTMLElement) || !(mediaFace instanceof HTMLElement)) return false;
-        player.classList.add('audio-overlay');
-        const frame = player.querySelector('iframe');
-        if (frame instanceof HTMLIFrameElement) {
-          player.classList.add('is-loading');
-          const revealPlayer = () => {
-            player.classList.remove('is-loading');
-            player.classList.add('is-ready');
-          };
-          frame.addEventListener('load', revealPlayer, { once: true, signal: eventSignal });
-          // A cached cross-origin iframe can complete before its load event is
-          // observable by the parent. Never leave a remounted player hidden.
-          window.setTimeout(revealPlayer, 1200);
+        const player = cube.querySelector(`.audio-overlay[data-position="${slot.dataset.position}"]`);
+        const embeddedDocument = player?.querySelector('iframe, object');
+        if (!(player instanceof HTMLElement) || !(embeddedDocument instanceof HTMLElement)) return false;
+        if (embeddedDocument instanceof HTMLObjectElement) {
+          const source = embeddedDocument.dataset.src;
+          if (source && embeddedDocument.getAttribute('data') !== source) {
+            embeddedDocument.data = source;
+          }
         }
-        player.dataset.position = slot.dataset.position;
-        cube.append(player);
+        player.classList.add('is-active');
+        player.setAttribute('aria-hidden', 'false');
         requestAnimationFrame(() => alignAudioOverlay(player));
         window.setTimeout(() => alignAudioOverlay(player), 450);
 
-        if (mediaFace.dataset.hasNext !== 'true') return true;
+        const hasNext = mediaFace.dataset.hasNext === 'true';
         const advance = document.createElement('button');
         advance.type = 'button';
         advance.className = 'media-turn audio-media-turn';
-        advance.setAttribute('aria-label', `Show next media for ${slot.dataset.title}`);
+        advance.setAttribute('aria-label', hasNext
+          ? `Show next media for ${slot.dataset.title}`
+          : `Reset ${slot.dataset.title}`);
         advance.addEventListener('click', (event) => {
           event.preventDefault();
           event.stopPropagation();
-          setCubePosition(cube, 4);
+          if (hasNext) {
+            setCubePosition(cube, 4);
+          } else {
+            resetCube(cube);
+          }
         }, { signal: eventSignal });
         cube.append(advance);
         return true;
@@ -310,6 +348,7 @@ const projects = projectRecords.map((project) => ({
             videoUrl.searchParams.set('byline', '0');
             videoUrl.searchParams.set('portrait', '0');
           }
+          frame.src = videoUrl.toString();
           frame.title = `${slot.dataset.title} video`;
           frame.allow = 'autoplay; encrypted-media; picture-in-picture';
           frame.referrerPolicy = 'strict-origin-when-cross-origin';
@@ -334,10 +373,6 @@ const projects = projectRecords.map((project) => ({
           }, { signal: eventSignal });
           player.append(frame);
           slot.append(player);
-          // Cross-origin iframe navigation starts only after the player is in
-          // its final DOM position. This avoids WebKit cancelling a moved
-          // loading iframe and leaving an about:blank black face.
-          frame.src = videoUrl.toString();
           slot.onclick = (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -347,17 +382,10 @@ const projects = projectRecords.map((project) => ({
           return;
         }
         if (slot.dataset.provider === 'soundcloud') {
-          const frame = document.createElement('iframe');
-          const player = document.createElement('span');
-          player.className = 'embedded-player soundcloud';
-          frame.title = `${slot.dataset.title} audio`;
-          frame.allow = 'autoplay';
-          player.append(frame);
-          if (!mountAudioOverlay(slot, player)) {
+          if (!mountAudioOverlay(slot)) {
             slot.removeAttribute('data-mounted');
             return;
           }
-          frame.src = slot.dataset.src;
           return;
         }
         if (slot.dataset.provider === 'spotify') {
@@ -380,11 +408,11 @@ const projects = projectRecords.map((project) => ({
           const frame = document.createElement('iframe');
           const player = document.createElement('span');
           player.className = 'embedded-player apple';
+          frame.src = slot.dataset.src;
           frame.title = `${slot.dataset.title} on Apple Music`;
           frame.allow = 'autoplay *; encrypted-media *; fullscreen *; clipboard-write';
           player.append(frame);
           slot.append(player);
-          frame.src = slot.dataset.src;
           return;
         }
         if (slot.dataset.provider === 'atmos') {
@@ -413,22 +441,10 @@ const projects = projectRecords.map((project) => ({
           slot.append(view);
           return;
         }
-        const frame = document.createElement('iframe');
-        const player = document.createElement('span');
-        player.className = 'embedded-player bandcamp';
-        const source = slot.dataset.src
-          .replace('/transparent=true/', '/minimal=true/transparent=true/');
-        frame.title = `${slot.dataset.title} audio`;
-        frame.allow = 'autoplay; encrypted-media; picture-in-picture';
-        player.append(frame);
-        if (!mountAudioOverlay(slot, player)) {
+        if (!mountAudioOverlay(slot)) {
           slot.removeAttribute('data-mounted');
           return;
         }
-        // Start the cross-origin navigation only after the iframe is in its
-        // final DOM position. Moving a loading Bandcamp iframe can cancel its
-        // navigation and leave an invisible about:blank frame in WebKit.
-        frame.src = source;
       }
 
       function loadMediaAfterRotation(cube, position) {
@@ -535,6 +551,19 @@ const projects = projectRecords.map((project) => ({
         activeFilter = nextFilter;
         filterProjects(nextFilter);
       }, { signal: eventSignal });
+
+      // Selecting any cube always closes every other cube immediately. Keep
+      // this independent of the later face/rotation handlers so a transition
+      // lock or an embedded media surface cannot leave the previous cube open.
+      main.addEventListener('pointerdown', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+        const selectedCube = target.closest('.slice');
+        if (!selectedCube) return;
+        cubes.forEach((cube) => {
+          if (cube !== selectedCube) resetCube(cube);
+        });
+      }, { capture: true, signal: eventSignal });
 
       cubes.forEach((cube) => {
         const front = cube.querySelector('.front');
