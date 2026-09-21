@@ -56,7 +56,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=3840611873/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3840611873/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -79,7 +79,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=4027376985/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=4027376985/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -98,7 +98,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=3987444618/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3987444618/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -121,7 +121,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=2683530894/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2683530894/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -144,7 +144,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=1823207988/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=1823207988/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -184,7 +184,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=3668449147/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3668449147/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -333,7 +333,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=3565290909/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3565290909/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -441,7 +441,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=1860250825/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=1860250825/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -576,7 +576,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=4251722872/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=4251722872/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -650,7 +650,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=2961849578/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2961849578/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -841,7 +841,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=2598884347/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2598884347/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -860,7 +860,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=4116344490/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=4116344490/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -879,7 +879,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=2309671465/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2309671465/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -898,7 +898,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=3751102071/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3751102071/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -917,7 +917,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=321693275/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=321693275/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -1016,7 +1016,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=539135201/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=539135201/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -1038,7 +1038,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=2138073833/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2138073833/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -1097,7 +1097,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=1001479659/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=1001479659/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -1154,7 +1154,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=2714683916/size=large/bgcol=111111/linkcol=f4f4f1/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=2714683916/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },

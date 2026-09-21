@@ -89,27 +89,11 @@ const projects = projectRecords.map((project) => ({
               </div>
             </div>
             {audioOverlays.map(({ media, position }) => {
-              const source = media.provider === 'bandcamp'
-                ? media.src.replace('/transparent=true/', '/minimal=true/transparent=true/')
-                : media.src;
               return <span
                 class={`embedded-player ${media.provider} audio-overlay`}
                 data-position={position}
                 aria-hidden="true"
               >
-                {media.provider === 'bandcamp'
-                  ? <object
-                      data={source}
-                      data-src={source}
-                      type="text/html"
-                      aria-label={`${project.title} audio`}
-                    ></object>
-                  : <iframe
-                      src={source}
-                      loading="lazy"
-                      title={`${project.title} audio`}
-                      allow="autoplay"
-                    ></iframe>}
               </span>;
             })}
             <button class="media-advance" type="button" aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Reset ${project.title}`}></button>
@@ -141,18 +125,23 @@ const projects = projectRecords.map((project) => ({
         slot.replaceChildren();
         slot.onclick = null;
         slot.removeAttribute('data-mounted');
+        slot.removeAttribute('data-preloaded');
+        slot.inert = false;
       }
 
-      function clearCubeMedia(cube) {
-        cube.querySelectorAll('.media-slot').forEach(clearSlot);
+      function clearCubeMedia(cube, preserveAudioPosition = null, preserveVideoPosition = null) {
+        cube.querySelectorAll('.media-slot').forEach((slot) => {
+          if (slot.dataset.position !== preserveVideoPosition) clearSlot(slot);
+        });
         cube.querySelectorAll('.audio-overlay').forEach((player) => {
-          const wasActive = player.classList.contains('is-active');
+          if (player.dataset.position === preserveAudioPosition) return;
           player.classList.remove('is-active');
           player.setAttribute('aria-hidden', 'true');
-          const bandcampPlayer = player.querySelector('object[data-src]');
-          if (wasActive && bandcampPlayer instanceof HTMLObjectElement) {
-            bandcampPlayer.data = 'about:blank';
-          }
+          player.style.left = '';
+          player.style.top = '';
+          player.style.width = '';
+          player.style.height = '';
+          player.replaceChildren();
         });
         cube.querySelectorAll('.audio-media-turn').forEach((element) => element.remove());
       }
@@ -163,7 +152,19 @@ const projects = projectRecords.map((project) => ({
         const face = cube?.querySelector(`.media-face[data-position="${position}"]`);
         if (!(cube instanceof HTMLElement) || !(face instanceof HTMLElement)) return;
         const cubeRect = cube.getBoundingClientRect();
-        const faceRect = face.getBoundingClientRect();
+        // Measure the destination pose, never the live face mid-transition.
+        // This empty probe uses the same CSS geometry, without cloning media.
+        const probe = document.createElement('div');
+        probe.className = 'slab';
+        probe.setAttribute('aria-hidden', 'true');
+        probe.style.cssText = 'position:absolute;inset:0;transition:none;visibility:hidden;pointer-events:none';
+        const probeFace = document.createElement('div');
+        probeFace.className = face.className;
+        probeFace.style.visibility = 'hidden';
+        probe.append(probeFace);
+        cube.append(probe);
+        const faceRect = probeFace.getBoundingClientRect();
+        probe.remove();
         const size = Math.min(cubeRect.width, cubeRect.height) * .92;
         player.style.left = `${faceRect.left - cubeRect.left + (faceRect.width - size) / 2}px`;
         player.style.top = `${faceRect.top - cubeRect.top + (faceRect.height - size) / 2}px`;
@@ -171,23 +172,51 @@ const projects = projectRecords.map((project) => ({
         player.style.height = `${size}px`;
       }
 
-      function mountAudioOverlay(slot) {
+      function mountAudioOverlay(slot, preload = false) {
         const cube = slot.closest('.slice');
         const mediaFace = slot.closest('.media-face');
         if (!(cube instanceof HTMLElement) || !(mediaFace instanceof HTMLElement)) return false;
         const player = cube.querySelector(`.audio-overlay[data-position="${slot.dataset.position}"]`);
-        const embeddedDocument = player?.querySelector('iframe, object');
-        if (!(player instanceof HTMLElement) || !(embeddedDocument instanceof HTMLElement)) return false;
-        if (embeddedDocument instanceof HTMLObjectElement) {
-          const source = embeddedDocument.dataset.src;
-          if (source && embeddedDocument.getAttribute('data') !== source) {
-            embeddedDocument.data = source;
-          }
+        if (!(player instanceof HTMLElement)) return false;
+        const source = slot.dataset.src;
+        if (!source) return false;
+        let frame = player.querySelector('iframe');
+        if (!frame || frame.getAttribute('src') !== source) {
+          frame = document.createElement('iframe');
+          frame.title = `${slot.dataset.title} audio`;
+          frame.allow = 'autoplay';
+          frame.loading = 'eager';
+          player.replaceChildren(frame);
+          frame.src = source;
         }
-        player.classList.add('is-active');
-        player.setAttribute('aria-hidden', 'false');
-        requestAnimationFrame(() => alignAudioOverlay(player));
-        window.setTimeout(() => alignAudioOverlay(player), 450);
+        player.inert = true;
+        if (preload) return true;
+        alignAudioOverlay(player);
+        const reveal = () => {
+          const expectedPose = slot.dataset.position === '3' ? 'is-media-1' : 'is-media-2';
+          if (!cube.classList.contains(expectedPose) || player.querySelector('iframe') !== frame) return;
+          player.inert = false;
+          player.classList.add('is-active');
+          player.setAttribute('aria-hidden', 'false');
+        };
+        // Reveal when the eased rotation is 90% complete, not after its slow tail.
+        const rotations = cube.querySelector('.slab').getAnimations()
+          .filter((animation) => animation.transitionProperty === 'transform');
+        if (rotations.length) {
+          const revealNearEnd = () => {
+            if (player.querySelector('iframe') !== frame) return;
+            if (rotations.every((animation) => animation.playState === 'finished'
+              || (animation.effect?.getComputedTiming().progress ?? 0) >= .9)) {
+              reveal();
+            } else if (rotations.some((animation) => animation.playState === 'running'
+              || animation.pending)) {
+              window.requestAnimationFrame(revealNearEnd);
+            }
+          };
+          revealNearEnd();
+        } else {
+          reveal();
+        }
 
         const hasNext = mediaFace.dataset.hasNext === 'true';
         const advance = document.createElement('button');
@@ -199,11 +228,7 @@ const projects = projectRecords.map((project) => ({
         advance.addEventListener('click', (event) => {
           event.preventDefault();
           event.stopPropagation();
-          if (hasNext) {
-            setCubePosition(cube, 4);
-          } else {
-            resetCube(cube);
-          }
+          advanceMedia(cube);
         }, { signal: eventSignal });
         cube.append(advance);
         return true;
@@ -217,6 +242,15 @@ const projects = projectRecords.map((project) => ({
         lockedCubes.delete(cube);
         cube.classList.remove(...positions, 'is-atmos', 'is-mobile-selected');
         clearCubeMedia(cube);
+      }
+
+      function advanceMedia(cube) {
+        if (cube.classList.contains('is-media-1')
+          && cube.querySelector('.media-slot[data-position="4"]')) {
+          setCubePosition(cube, 4);
+        } else {
+          resetCube(cube);
+        }
       }
 
       function lockCube(cube) {
@@ -314,9 +348,21 @@ const projects = projectRecords.map((project) => ({
         resumeVideoPlayer(expandedPlayer);
       }, { capture: true, signal: eventSignal });
 
-      function mountEmbed(slot) {
-        if (slot.dataset.mounted === 'true') return;
+      function mountEmbed(slot, preload = false) {
+        if (slot.dataset.mounted === 'true') {
+          if (!preload && slot.dataset.preloaded === 'true') {
+            slot.removeAttribute('data-preloaded');
+            slot.inert = false;
+            const player = slot.querySelector('.embedded-player');
+            if (player) resumeVideoPlayer(player);
+          }
+          return;
+        }
         slot.dataset.mounted = 'true';
+        if (preload) {
+          slot.dataset.preloaded = 'true';
+          slot.inert = true;
+        }
         if (slot.dataset.provider === 'youtube' || slot.dataset.provider === 'vimeo') {
           const frame = document.createElement('iframe');
           const player = document.createElement('span');
@@ -328,7 +374,7 @@ const projects = projectRecords.map((project) => ({
             resumeVideoPlayer(player);
           }, { signal: eventSignal });
           const videoUrl = new URL(slot.dataset.src);
-          videoUrl.searchParams.set('autoplay', '1');
+          videoUrl.searchParams.set('autoplay', preload ? '0' : '1');
           if (isYoutube) {
             // YouTube now relies on the embedding page identity for player
             // configuration. Supplying both values also avoids Error 153 in
@@ -364,7 +410,7 @@ const projects = projectRecords.map((project) => ({
               sendCommand('unloadModule', ['captions']);
               sendCommand('unloadModule', ['cc']);
             };
-            sendCommand('playVideo');
+            if (slot.dataset.preloaded !== 'true') sendCommand('playVideo');
             // YouTube can restore the viewer's saved caption preference after
             // its first paint, so repeat the off command as the player settles.
             [100, 500, 1200, 2500].forEach((delay) => {
@@ -377,7 +423,7 @@ const projects = projectRecords.map((project) => ({
             event.preventDefault();
             event.stopPropagation();
             const cube = slot.closest('.slice');
-            if (cube) resetCube(cube);
+            if (cube) advanceMedia(cube);
           };
           return;
         }
@@ -450,37 +496,34 @@ const projects = projectRecords.map((project) => ({
       function loadMediaAfterRotation(cube, position) {
         window.clearTimeout(mediaLoadTimers.get(cube));
         const slot = cube.querySelector(`.media-slot[data-position="${position}"]`);
-        // Video autoplay has to be initiated while the click still carries
-        // user activation. The iframe remains lazy—it is only created for the
-        // selected cube—but waiting for the visual rotation to finish causes
-        // browsers to reject playback and leaves our control-free player black.
-        if (slot?.dataset.provider === 'youtube' || slot?.dataset.provider === 'vimeo') {
-          mountEmbed(slot);
-          return;
-        }
-        const delay = reduceMotion ? 0 : 430;
-        const timer = window.setTimeout(() => {
-          const isStillShowing = (position === 3 && cube.classList.contains('is-media-1'))
-            || (position === 4 && cube.classList.contains('is-media-2'));
-          if (!isStillShowing) return;
-          const delayedSlot = cube.querySelector(`.media-slot[data-position="${position}"]`);
-          if (delayedSlot) mountEmbed(delayedSlot);
-        }, delay);
-        mediaLoadTimers.set(cube, timer);
+        // Geometry is calculated at the destination pose before reveal.
+        // Navigation starts now; audio reveal waits only for the actual spin.
+        if (slot) mountEmbed(slot);
       }
 
       function setCubePosition(cube, position) {
         cubes.forEach((item) => { if (item !== cube) resetCube(item); });
         window.clearTimeout(mediaLoadTimers.get(cube));
+        // Keep the already-loading iframe attached during info -> audio only.
+        const preserveAudioPosition = position === 3 && cube.classList.contains('is-info') ? '3' : null;
+        const preloadedVideo = cube.querySelector(`.media-slot[data-position="${position}"][data-preloaded="true"]`);
+        const preserveVideoPosition = preloadedVideo ? String(position) : null;
         cube.classList.remove(...positions);
-        clearCubeMedia(cube);
-        if (position === 2) cube.classList.add('is-info');
+        clearCubeMedia(cube, preserveAudioPosition, preserveVideoPosition);
+        if (position === 2) {
+          cube.classList.add('is-info');
+          const audioSlot = cube.querySelector('.media-slot[data-position="3"][data-provider="bandcamp"], .media-slot[data-position="3"][data-provider="soundcloud"]');
+          if (audioSlot) mountAudioOverlay(audioSlot, true);
+        }
         if (position === 3) {
           cube.classList.add('is-media-1');
           if (cube.dataset.atmos === 'true') cube.classList.add('is-atmos');
         }
         if (position === 4) cube.classList.add('is-media-2');
         if (position > 2) loadMediaAfterRotation(cube, position);
+        // Only load the next YouTube face of this selected cube, silently.
+        const nextVideo = cube.querySelector(`.media-slot[data-position="${position + 1}"][data-provider="youtube"]`);
+        if (nextVideo) mountEmbed(nextVideo, true);
         lockCube(cube);
       }
 
@@ -595,7 +638,7 @@ const projects = projectRecords.map((project) => ({
           }
           if (cube.classList.contains('is-media-2')) {
             event.stopPropagation();
-            resetCube(cube);
+            advanceMedia(cube);
           }
         }, { capture: true, signal: eventSignal });
         front.addEventListener('click', () => {
@@ -624,12 +667,8 @@ const projects = projectRecords.map((project) => ({
         const firstMediaFace = cube.querySelector('.media-face[data-position="3"]');
         firstMediaFace.addEventListener('click', (event) => {
           if (lockedCubes.has(cube)) return;
-          if (event.target.closest('.embedded-player, .video-expand, .spotify-link, .atmos-apple-link')) return;
-          if (firstMediaFace.dataset.hasNext === 'true') {
-            setCubePosition(cube, 4);
-          } else {
-            resetCube(cube);
-          }
+          if (event.target.closest('iframe, object, .video-expand, .spotify-link, .atmos-apple-link')) return;
+          advanceMedia(cube);
         }, { signal: eventSignal });
       });
 
