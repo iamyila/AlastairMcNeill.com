@@ -165,7 +165,9 @@ const projects = projectRecords.map((project) => ({
         cube.append(probe);
         const faceRect = probeFace.getBoundingClientRect();
         probe.remove();
-        const size = Math.min(cubeRect.width, cubeRect.height) * .92;
+        const size = player.classList.contains('bandcamp')
+          ? Math.max(faceRect.width, faceRect.height)
+          : Math.min(cubeRect.width, cubeRect.height) * .92;
         player.style.left = `${faceRect.left - cubeRect.left + (faceRect.width - size) / 2}px`;
         player.style.top = `${faceRect.top - cubeRect.top + (faceRect.height - size) / 2}px`;
         player.style.width = `${size}px`;
@@ -230,7 +232,12 @@ const projects = projectRecords.map((project) => ({
           event.stopPropagation();
           advanceMedia(cube);
         }, { signal: eventSignal });
-        cube.append(advance);
+        if (slot.dataset.provider === 'bandcamp') {
+          advance.classList.add('bandcamp-artwork-turn');
+          player.append(advance);
+        } else {
+          cube.append(advance);
+        }
         return true;
       }
 
