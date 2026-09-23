@@ -5,10 +5,18 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
 .filter-nav { display: grid; grid-template-columns: repeat(5, max-content); align-items: end; justify-content: center; gap: clamp(.9rem, 2vw, 1.6rem) clamp(.8rem, 1.8vw, 1.6rem); width: min(100%, 116rem); min-height: 8rem; margin: 0 auto clamp(2.8rem, 6vw, 6.5rem); }
 .filter-cube { display: flex; flex-direction: column; align-items: start; justify-content: end; gap: .42rem; padding: 0; border: 0; color: #151515; background: transparent; cursor: pointer; }
 .filter-all { grid-column: 1 / -1; align-items: stretch; }
-.filter-count { display: grid; grid-auto-flow: column; grid-template-rows: repeat(6, .66rem); grid-auto-columns: .66rem; gap: 2px; width: max-content; transform: scaleY(-1); }
-.filter-all .filter-count { grid-template-rows: repeat(3, .66rem); grid-auto-columns: .66rem; justify-content: space-between; width: 100%; }
+.filter-count { --nav-tile: clamp(.66rem, 1.05vw, .9rem); display: grid; grid-auto-flow: column; grid-template-rows: repeat(6, var(--nav-tile)); grid-auto-columns: var(--nav-tile); gap: 2px; width: max-content; transform: scaleY(-1); }
+.filter-all .filter-count { grid-template-rows: repeat(3, var(--nav-tile)); grid-auto-columns: var(--nav-tile); justify-content: space-between; width: 100%; }
 .filter-count i { display: block; width: 100%; aspect-ratio: 1; border: 1px solid rgba(21,21,21,.28); background-color: #151515; background-position: center; background-size: cover; transform: scaleY(-1); transition: transform 150ms ease, border-color 150ms ease; }
 .filter-label { display: none; }
+@media (min-width: 541px) {
+  .filter-cube { position: relative; font-family: inherit; }
+  .filter-label { display: block; position: absolute; top: 100%; left: 0; padding-top: .35rem; font-size: .8rem; line-height: 1; white-space: nowrap; pointer-events: none; visibility: hidden; }
+  .filter-cube:hover .filter-label, .filter-cube:focus-visible .filter-label { visibility: visible; }
+}
+@media (min-width: 900px) {
+  .filter-count { --nav-tile: clamp(.825rem, 1.3125vw, 1.125rem); gap: 2.5px; }
+}
 .filter-cube:hover .filter-count i, .filter-cube:focus-visible .filter-count i, .filter-cube.is-active .filter-count i { border-color: #151515; }
 .filter-cube:hover .filter-count i, .filter-cube:focus-visible .filter-count i { transform: scaleY(-1) scale(1.18); }
 .filter-cube:focus-visible { outline: 2px solid #151515; outline-offset: .38rem; }
