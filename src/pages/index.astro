@@ -4,6 +4,7 @@ import { filters, projects as projectRecords } from '../data/projects';
 
 const projects = projectRecords.map((project) => ({
   ...project,
+  image: `${import.meta.env.BASE_URL.replace(/\/$/, '')}${project.image}`,
   mediaFaces: [project.media.audio, project.media.video].filter(Boolean),
 })).sort((left, right) => {
   const yearDifference = right.timelineYear - left.timelineYear;

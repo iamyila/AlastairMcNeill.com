@@ -736,7 +736,7 @@ export const projects: Project[] = [
     "media": {
       "video": {
         "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/GjRSkOJemew?rel=0&modestbranding=1&playsinline=1&controls=1"
+        "src": "https://www.youtube.com/embed/GjRSkOJemew?si=NIrYGhTy0cutdHLy"
       }
     }
   },
