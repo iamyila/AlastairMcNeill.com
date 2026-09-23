@@ -121,13 +121,14 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
   .filter-all { align-items: stretch; }
   .filter-count {
     display: grid;
-    grid-template-rows: repeat(10, .24rem);
-    grid-auto-columns: .24rem;
+    grid-template-rows: repeat(10, .3rem);
+    grid-auto-columns: .3rem;
     gap: 1px;
   }
   .filter-all .filter-count {
-    grid-template-rows: repeat(5, .24rem);
-    grid-auto-columns: .24rem;
+    grid-template-rows: repeat(5, .3rem);
+    grid-auto-columns: .3rem;
+    justify-content: center;
   }
   .filter-label { display: none; }
   .social-links {

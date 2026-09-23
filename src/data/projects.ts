@@ -276,8 +276,8 @@ export const projects: Project[] = [
     "image": "/media/projects/release-better-of-me.jpg",
     "media": {
       "audio": {
-        "provider": "soundcloud",
-        "src": "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/441945816&color=%232b262b&auto_play=false&hide_related=false&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
+        "provider": "bandcamp",
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3865153079/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       },
       "video": {
         "provider": "youtube",
@@ -404,8 +404,8 @@ export const projects: Project[] = [
     "image": "/media/projects/018.jpg",
     "media": {
       "audio": {
-        "provider": "soundcloud",
-        "src": "https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/playlists/235199102&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true"
+        "provider": "bandcamp",
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=1023862734/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
       }
     }
   },
@@ -423,7 +423,7 @@ export const projects: Project[] = [
     "media": {
       "video": {
         "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/nQUltYoJMFo?rel=0&modestbranding=1&playsinline=1&controls=1"
+        "src": "https://www.youtube-nocookie.com/embed/vSU8LgathMA?rel=0&modestbranding=1&playsinline=1&controls=1"
       }
     }
   },
