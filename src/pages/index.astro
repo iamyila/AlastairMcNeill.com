@@ -607,6 +607,9 @@ const projects = projectRecords.map((project) => ({
       // this independent of the later face/rotation handlers so a transition
       // lock or an embedded media surface cannot leave the previous cube open.
       main.addEventListener('pointerdown', (event) => {
+        // On mobile, shrinking the previous cube here moves the grid between
+        // pointerdown and click. Select/reset in the cube click handler instead.
+        if (mobileLayout.matches) return;
         const target = event.target;
         if (!(target instanceof Element)) return;
         const selectedCube = target.closest('.slice');
@@ -625,7 +628,6 @@ const projects = projectRecords.map((project) => ({
           if (!(target instanceof Element)) return;
           if (target.closest('.video-expand')) return;
           if (mobileLayout.matches
-            && Number(info.dataset.mediaCount)
             && !cube.classList.contains('is-mobile-selected')) {
             event.preventDefault();
             event.stopImmediatePropagation();
