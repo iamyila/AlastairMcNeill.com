@@ -951,7 +951,7 @@ export const projects: Project[] = [
     "media": {
       "video": {
         "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/YFQnCGROl-Y?rel=0&modestbranding=1&playsinline=1&controls=1"
+        "src": "https://www.youtube-nocookie.com/embed/ca0cp5lE72E?rel=0&modestbranding=1&playsinline=1&controls=1"
       }
     }
   },
@@ -1147,12 +1147,7 @@ export const projects: Project[] = [
       "mastering"
     ],
     "image": "/media/projects/gugutke.jpg",
-    "media": {
-      "video": {
-        "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/6W4gbUsna6E?rel=0&modestbranding=1&playsinline=1&controls=1"
-      }
-    }
+    "media": {}
   },
   {
     "id": 59,
