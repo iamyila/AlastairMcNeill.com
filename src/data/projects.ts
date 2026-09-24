@@ -42,6 +42,21 @@ export const filters: { id: Filter; label: string }[] = [
 
 export const projects: Project[] = [
   {
+    "id": 64,
+    "title": "Emotional Tides — Kreda",
+    "timelineYear": 2020,
+    "role": "WRITER · PRODUCER · MIX",
+    "summary": "Kreda’s first single: music composed to Atej Tutta’s Venetian visuals, using binaural and ambisonic techniques.",
+    "categories": ["art", "music", "production"],
+    "image": "/media/projects/kreda-emotional-tides.jpg",
+    "media": {
+      "video": {
+        "provider": "youtube",
+        "src": "https://www.youtube-nocookie.com/embed/LjFm8f_TQRc?rel=0&playsinline=1&controls=1"
+      }
+    }
+  },
+  {
     "id": 0,
     "title": "The Land We Knew the Best — Chris Eckman",
     "timelineYear": 2025,
@@ -172,8 +187,8 @@ export const projects: Project[] = [
   },
   {
     "id": 6,
-    "title": "Crest",
-    "timelineYear": 2021,
+    "title": "Crest — Kreda",
+    "timelineYear": 2020,
     "role": "WRITER · PRODUCER · MIX",
     "summary": "Kreda’s experimental pop collaboration with Mina Špiler, Matevž Kolenc and Atej Tutta.",
     "categories": [
@@ -188,7 +203,7 @@ export const projects: Project[] = [
       },
       "video": {
         "provider": "youtube",
-        "src": "https://www.youtube-nocookie.com/embed/LjFm8f_TQRc?rel=0&playsinline=1&controls=1"
+        "src": "https://www.youtube-nocookie.com/embed/0DNXuuzCJRU?rel=0&playsinline=1&controls=1"
       }
     }
   },
