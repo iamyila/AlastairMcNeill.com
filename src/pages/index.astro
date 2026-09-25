@@ -297,7 +297,8 @@ const projects = projectRecords.map((project) => ({
           if (candidate !== cube) resetCube(candidate);
         });
         cube.classList.add('is-mobile-selected');
-        window.requestAnimationFrame(() => cube.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' }));
+        // Finish the layout/scroll in this selection, not during the next tap.
+        cube.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
 
       function openVideoZoom(slot) {
@@ -602,6 +603,40 @@ const projects = projectRecords.map((project) => ({
         activeFilter = nextFilter;
         filterProjects(nextFilter);
       }, { signal: eventSignal });
+
+      // Remember the touch target without changing the layout under the finger.
+      // A scroll/cancelled gesture must never become a face-advance click.
+      let mobileGesture = null;
+      main.addEventListener('pointerdown', (event) => {
+        if (!mobileLayout.matches) return;
+        const target = event.target;
+        mobileGesture = {
+          id: event.pointerId,
+          cube: target instanceof Element ? target.closest('.slice') : null,
+          x: event.clientX, y: event.clientY, scroll: window.scrollY,
+          cancelled: !event.isPrimary,
+        };
+      }, { capture: true, passive: true, signal: eventSignal });
+      window.addEventListener('pointermove', (event) => {
+        if (!mobileGesture || event.pointerId !== mobileGesture.id) return;
+        if (Math.hypot(event.clientX - mobileGesture.x, event.clientY - mobileGesture.y) > 10) {
+          mobileGesture.cancelled = true;
+        }
+      }, { passive: true, signal: eventSignal });
+      window.addEventListener('pointercancel', () => {
+        if (mobileGesture) mobileGesture.cancelled = true;
+      }, { passive: true, signal: eventSignal });
+      main.addEventListener('click', (event) => {
+        if (!mobileLayout.matches || event.detail === 0 || !mobileGesture) return;
+        const gesture = mobileGesture;
+        mobileGesture = null;
+        const target = event.target;
+        const cube = target instanceof Element ? target.closest('.slice') : null;
+        if (gesture.cancelled || cube !== gesture.cube || Math.abs(window.scrollY - gesture.scroll) > 10) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+        }
+      }, { capture: true, signal: eventSignal });
 
       // Selecting any cube always closes every other cube immediately. Keep
       // this independent of the later face/rotation handlers so a transition
