@@ -199,7 +199,7 @@ export const projects: Project[] = [
     "media": {
       "audio": {
         "provider": "bandcamp",
-        "src": "https://bandcamp.com/EmbeddedPlayer/album=3668449147/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/"
+        "src": "https://bandcamp.com/EmbeddedPlayer/album=3668449147/size=large/bgcol=111111/linkcol=f4f4f1/minimal=true/transparent=true/start_track=1/"
       },
       "video": {
         "provider": "youtube",

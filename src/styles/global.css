@@ -28,6 +28,18 @@ body { min-width: 320px; margin: 0; font-family: Arial, Helvetica, ui-sans-serif
 .social-links a:hover, .social-links a:focus-visible { transform: scale(1.12); outline: 1px solid #151515; outline-offset: .28rem; }
 .project-grid { display: grid; grid-template-columns: repeat(auto-fill, var(--slice)); gap: clamp(2.7rem, 7vw, 7.5rem); justify-content: center; max-width: 116rem; margin: 0 auto; }
 .slice { position: relative; isolation: isolate; width: var(--slice); height: var(--slice); perspective: 1300px; }
+@media (min-width: 541px) {
+  .project-grid:has(.is-linked-selected) {
+    grid-auto-flow: row dense;
+  }
+  .slice.is-linked-selected {
+    --slice: min(clamp(15rem, 32vw, 28rem), 48vw, 48svh);
+    grid-column: 1 / -1;
+    justify-self: center;
+    z-index: 5;
+    scroll-margin-top: calc((100svh - var(--slice)) / 2);
+  }
+}
 .media-advance { position: absolute; z-index: 2; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: pointer; opacity: 0; pointer-events: none; }
 .slice.is-info .media-advance { pointer-events: auto; }
 .slab { position: relative; z-index: 1; width: 100%; height: 100%; transform: rotateX(-8deg) rotateY(-26deg); transform-style: preserve-3d; transition: transform 400ms cubic-bezier(.2,.82,.18,1); }

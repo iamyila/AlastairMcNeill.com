@@ -4,6 +4,7 @@ import { filters, projects as projectRecords } from '../data/projects';
 
 const projects = projectRecords.map((project) => ({
   ...project,
+  slug: project.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
   image: `${import.meta.env.BASE_URL.replace(/\/$/, '')}${project.image}`,
   mediaFaces: [project.media.audio, project.media.video].filter(Boolean),
 })).sort((left, right) => {
@@ -66,7 +67,7 @@ const projects = projectRecords.map((project) => ({
           const audioOverlays = project.mediaFaces
             .map((media, index) => ({ media, position: index + 3 }))
             .filter(({ media }) => ['bandcamp', 'soundcloud'].includes(media.provider));
-          return <article class="slice" data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
+          return <article id={project.slug} class="slice" data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
             <div class="slab">
               <button class="face front" type="button" data-action="info" aria-label={`Show information for ${project.title}`}>
                 <img src={project.image} alt="" loading={project.id === 0 ? 'eager' : 'lazy'} fetchpriority={project.id === 0 ? 'high' : 'auto'} decoding="async" />
@@ -121,6 +122,40 @@ const projects = projectRecords.map((project) => ({
       const mobileLayout = window.matchMedia('(max-width: 540px)');
       let isFiltering = false;
       let activeFilter = 'all';
+      let pendingCubeLink = false;
+
+      function updateCubeLink(cube) {
+        const url = new URL(window.location.href);
+        url.hash = cube.id;
+        window.history.replaceState(window.history.state, '', url);
+      }
+
+      async function openCubeLink() {
+        let id;
+        try { id = decodeURIComponent(window.location.hash.slice(1)); }
+        catch { return; }
+        const cube = cubes.find((item) => item.id === id);
+        if (!cube) { pendingCubeLink = false; return; }
+        if (isFiltering) { pendingCubeLink = true; return; }
+        pendingCubeLink = false;
+        if (cube.hidden) {
+          activeFilter = 'all';
+          document.querySelectorAll('[data-filter]').forEach((button) => {
+            const selected = button.dataset.filter === 'all';
+            button.classList.toggle('is-active', selected);
+            button.setAttribute('aria-pressed', String(selected));
+          });
+          await filterProjects('all');
+          // A newer hash may have arrived while the grid was animating.
+          if (decodeURIComponent(window.location.hash.slice(1)) !== id) return;
+        }
+        ensureProjectImage(cube);
+        resetProjects();
+        cube.classList.add('is-linked-selected');
+        if (mobileLayout.matches) selectMobileCube(cube);
+        const bounds = cube.getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + bounds.top - (window.innerHeight - bounds.height) / 2, behavior: 'instant' });
+      }
 
       function clearSlot(slot) {
         slot.replaceChildren();
@@ -248,7 +283,7 @@ const projects = projectRecords.map((project) => ({
         mediaLoadTimers.delete(cube);
         interactionTimers.delete(cube);
         lockedCubes.delete(cube);
-        cube.classList.remove(...positions, 'is-atmos', 'is-mobile-selected');
+        cube.classList.remove(...positions, 'is-atmos', 'is-mobile-selected', 'is-linked-selected');
         clearCubeMedia(cube);
       }
 
@@ -276,6 +311,55 @@ const projects = projectRecords.map((project) => ({
         cubes.forEach(resetCube);
       }
 
+      // Isolated handoff for direct-link enlargement; ordinary selection stays unchanged.
+      let linkedHandoffActive = false;
+      async function leaveLinkedCube(cube) {
+        linkedHandoffActive = true;
+        try {
+          const before = new Map(cubes.filter((item) => !item.hidden)
+            .map((item) => [item, item.getBoundingClientRect()]));
+          const previousScroll = window.scrollY;
+          resetProjects();
+          ensureProjectImage(cube);
+          const scrollDelta = window.scrollY - previousScroll;
+          if (!reduceMotion) {
+            await Promise.all([...before].map(([item, start]) => {
+              const end = item.getBoundingClientRect();
+              return item.animate([
+                { transformOrigin: 'top left', transform: `translate(${start.left - end.left}px, ${start.top - scrollDelta - end.top}px) scale(${start.width / end.width}, ${start.height / end.height})` },
+                { transformOrigin: 'top left', transform: 'none' },
+              ], { duration: 350, easing: 'cubic-bezier(.2,.82,.18,1)' }).finished.catch(() => {});
+            }));
+          }
+          if (eventSignal.aborted) return;
+          const bounds = cube.getBoundingClientRect();
+          const from = window.scrollY;
+          const to = Math.max(0, Math.min(
+            document.documentElement.scrollHeight - window.innerHeight,
+            from + bounds.top - (window.innerHeight - bounds.height) / 2,
+          ));
+          if (!reduceMotion && Math.abs(to - from) > 1) {
+            await new Promise((resolve) => {
+              const start = performance.now();
+              function step(now) {
+                if (eventSignal.aborted) { resolve(); return; }
+                const progress = Math.min(1, (now - start) / 300);
+                const eased = progress * progress * (3 - 2 * progress);
+                window.scrollTo({ top: from + (to - from) * eased, behavior: 'instant' });
+                if (progress < 1) requestAnimationFrame(step);
+                else resolve();
+              }
+              requestAnimationFrame(step);
+            });
+          } else window.scrollTo({ top: to, behavior: 'instant' });
+          if (eventSignal.aborted) return;
+          setCubePosition(cube, 2);
+          lockCube(cube);
+        } finally {
+          linkedHandoffActive = false;
+        }
+      }
+
       // Astro can re-run this module during development without replacing the
       // current DOM. Reset any players created by the previous controller so
       // no aborted iframe handlers or stale mounted state survive hot reload.
@@ -297,6 +381,7 @@ const projects = projectRecords.map((project) => ({
           if (candidate !== cube) resetCube(candidate);
         });
         cube.classList.add('is-mobile-selected');
+        updateCubeLink(cube);
         // Finish the layout/scroll in this selection, not during the next tap.
         cube.scrollIntoView({ behavior: 'instant', block: 'center' });
       }
@@ -511,6 +596,7 @@ const projects = projectRecords.map((project) => ({
       }
 
       function setCubePosition(cube, position) {
+        updateCubeLink(cube);
         cubes.forEach((item) => { if (item !== cube) resetCube(item); });
         window.clearTimeout(mediaLoadTimers.get(cube));
         // Keep the already-loading iframe attached during info -> audio only.
@@ -588,11 +674,15 @@ const projects = projectRecords.map((project) => ({
 
         await Promise.all([...moves, ...arrivals]);
         isFiltering = false;
+        if (pendingCubeLink) openCubeLink();
       }
 
       document.querySelector('.filter-nav').addEventListener('click', (event) => {
         const filterButton = event.target.closest('[data-filter]');
         if (!filterButton || isFiltering) return;
+        const url = new URL(window.location.href);
+        url.hash = '';
+        window.history.replaceState(window.history.state, '', url);
         const requestedFilter = filterButton.dataset.filter;
         const nextFilter = requestedFilter === activeFilter && requestedFilter !== 'all' ? 'all' : requestedFilter;
         document.querySelectorAll('[data-filter]').forEach((button) => {
@@ -644,7 +734,7 @@ const projects = projectRecords.map((project) => ({
       main.addEventListener('pointerdown', (event) => {
         // On mobile, shrinking the previous cube here moves the grid between
         // pointerdown and click. Select/reset in the cube click handler instead.
-        if (mobileLayout.matches) return;
+        if (linkedHandoffActive || mobileLayout.matches || document.querySelector('.is-linked-selected')) return;
         const target = event.target;
         if (!(target instanceof Element)) return;
         const selectedCube = target.closest('.slice');
@@ -661,7 +751,19 @@ const projects = projectRecords.map((project) => ({
         cube.addEventListener('click', (event) => {
           const target = event.target;
           if (!(target instanceof Element)) return;
+          if (linkedHandoffActive) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return;
+          }
           if (target.closest('.video-expand')) return;
+          const linkedCube = document.querySelector('.is-linked-selected');
+          if (!mobileLayout.matches && linkedCube && linkedCube !== cube) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            void leaveLinkedCube(cube);
+            return;
+          }
           if (mobileLayout.matches
             && !cube.classList.contains('is-mobile-selected')) {
             event.preventDefault();
@@ -673,6 +775,15 @@ const projects = projectRecords.map((project) => ({
             event.preventDefault();
             event.stopPropagation();
             return;
+          }
+          // Every new desktop selection comes into view, not only the first
+          // selection after leaving an enlarged direct-link cube.
+          if (!mobileLayout.matches && !positions.some((position) => cube.classList.contains(position))) {
+            const bounds = cube.getBoundingClientRect();
+            window.scrollTo({
+              top: window.scrollY + bounds.top - (window.innerHeight - bounds.height) / 2,
+              behavior: reduceMotion ? 'instant' : 'smooth',
+            });
           }
           if (cube.classList.contains('is-info')
             && !Number(info.dataset.mediaCount)
@@ -731,6 +842,9 @@ const projects = projectRecords.map((project) => ({
         if (target.closest('.filter-nav')) return;
         resetProjects();
       }, { capture: true, signal: eventSignal });
+
+      window.addEventListener('hashchange', openCubeLink, { signal: eventSignal });
+      openCubeLink();
     </script>
   </body>
 </html>
