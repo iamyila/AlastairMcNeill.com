@@ -4,6 +4,8 @@ export type Filter = 'all' | 'art' | 'music' | 'mastering' | 'production' | 'com
 export type Project = {
   id: number;
   title: string;
+  displayTitle?: string;
+  artist?: string;
   timelineYear: number;
   year?: string;
   role: string;
@@ -117,6 +119,7 @@ export const projects: Project[] = [
   {
     "id": 2,
     "title": "Dysfunctional Combinations and Collaborations, Vol. 2",
+    "artist": "Yila",
     "timelineYear": 2021,
     "year": "2021",
     "role": "PRODUCER · MIX · COMPOSITION",
@@ -140,6 +143,7 @@ export const projects: Project[] = [
   {
     "id": 3,
     "title": "Where the Spirit rests",
+    "artist": "Chris Eckman",
     "timelineYear": 2021,
     "year": "2021",
     "role": "CO-PRODUCER · RECORDING · MIX",
@@ -163,6 +167,7 @@ export const projects: Project[] = [
   {
     "id": 4,
     "title": "Functional Combinations and Collaborations, Vol. 1",
+    "artist": "Yila",
     "timelineYear": 2020,
     "year": "2020",
     "role": "ARTIST · PRODUCER · MIX",
@@ -296,6 +301,7 @@ export const projects: Project[] = [
   {
     "id": 11,
     "title": "Better (of) me",
+    "artist": "Yila & Mina Špiler",
     "timelineYear": 2018,
     "year": "2018",
     "role": "WRITER · PRODUCER · MIX",
@@ -353,6 +359,8 @@ export const projects: Project[] = [
   {
     "id": 14,
     "title": "Souvenir — Album",
+    "artist": "Yila",
+    "displayTitle": "Souvenir (Album)",
     "timelineYear": 2017,
     "role": "PRODUCER",
     "summary": "Yila’s soundtrack album for the Souvenir musical-theatre project.",
@@ -371,6 +379,8 @@ export const projects: Project[] = [
   {
     "id": 63,
     "title": "Souvenir — Live Show",
+    "artist": "Yila",
+    "displayTitle": "Souvenir (Live Show)",
     "timelineYear": 2018,
     "role": "PRODUCER",
     "summary": "Eight-piece multimedia musical theatre with dual projection and CRT screens.",
@@ -443,6 +453,8 @@ export const projects: Project[] = [
   {
     "id": 18,
     "title": "Hairless toys",
+    "displayTitle": "Hairless Toys",
+    "artist": "Róisín Murphy",
     "timelineYear": 2015,
     "role": "SHOW DESIGN · PRE-PRODUCTION · MUSICIAN",
     "summary": "Róisín Murphy world tour: audio-reactive visuals, synths, vocal effects and guitar.",
@@ -461,6 +473,7 @@ export const projects: Project[] = [
   {
     "id": 19,
     "title": "Overload",
+    "artist": "Yila",
     "timelineYear": 2015,
     "role": "ARTIST · PRODUCER",
     "summary": "Yila EP for Silver Bear / Sunday Best with video and remixes.",
@@ -483,6 +496,7 @@ export const projects: Project[] = [
   {
     "id": 20,
     "title": "Imaginature",
+    "artist": "HK119",
     "timelineYear": 2013,
     "role": "MUSICAL DIRECTOR · PERFORMER",
     "summary": "European tour supporting HK119’s One Little Indian release.",
@@ -513,6 +527,7 @@ export const projects: Project[] = [
   {
     "id": 22,
     "title": "Behind The Cover Rouge Dior",
+    "artist": "Harper’s Bazaar / Dior",
     "timelineYear": 2018,
     "role": "COMPOSITION · SOUND DESIGN",
     "summary": "Harper’s Bazaar film for the bespoke Dior cover.",
@@ -566,6 +581,7 @@ export const projects: Project[] = [
   {
     "id": 25,
     "title": "Skate Uphill",
+    "artist": "Nokia",
     "timelineYear": 2012,
     "role": "CO-WRITER · PERFORMER",
     "summary": "Commissioned Nokia PureView song with Leander Lyons.",
@@ -596,6 +612,7 @@ export const projects: Project[] = [
   {
     "id": 27,
     "title": "Un puit qui fuit",
+    "artist": "Garance and the Mitochondries",
     "timelineYear": 2016,
     "role": "PRODUCER",
     "summary": "Garance and the Mitochondries full-length album.",
@@ -635,6 +652,7 @@ export const projects: Project[] = [
   {
     "id": 29,
     "title": "Jean Imbert",
+    "artist": "Sojasun",
     "timelineYear": 2014,
     "role": "COMPOSITION · RECORDING · MIX",
     "summary": "Sojasun sonic identity for television, web and radio.",
@@ -653,6 +671,7 @@ export const projects: Project[] = [
   {
     "id": 30,
     "title": "Compulse",
+    "artist": "Flyfaction",
     "timelineYear": 2016,
     "role": "COMPOSER",
     "summary": "Original music for Flyfaction’s audio-visual work mixing animation, stills and live action.",
@@ -670,6 +689,7 @@ export const projects: Project[] = [
   {
     "id": 31,
     "title": "Oh No the Drift Of the World",
+    "artist": "Jackamo Brown",
     "timelineYear": 2012,
     "role": "PRODUCER · RECORDING · MIX",
     "summary": "Jackamo Brown’s debut album, recorded live in a Hackney church.",
@@ -701,6 +721,7 @@ export const projects: Project[] = [
   {
     "id": 33,
     "title": "Distraction Pieces",
+    "artist": "Scroobius Pip",
     "timelineYear": 2011,
     "year": "2011",
     "role": "EXECUTIVE PRODUCER · MIX ENGINEER",
@@ -720,6 +741,7 @@ export const projects: Project[] = [
   {
     "id": 34,
     "title": "Aloosh EP",
+    "artist": "Aloosh",
     "timelineYear": 2009,
     "role": "ARTIST · PRODUCER",
     "summary": "The first Aloosh EP, including Separate.",
@@ -738,6 +760,7 @@ export const projects: Project[] = [
   {
     "id": 35,
     "title": "Takin Off",
+    "artist": "Palmer",
     "timelineYear": 2011,
     "role": "SONGWRITER · ARRANGER · REMIXER · MIX",
     "summary": "Palmer’s debut nu-disco release.",
@@ -756,6 +779,7 @@ export const projects: Project[] = [
   {
     "id": 36,
     "title": "Overpowered",
+    "artist": "Róisín Murphy",
     "timelineYear": 2008,
     "role": "GUITAR",
     "summary": "Róisín Murphy’s Overpowered world tour.",
@@ -774,6 +798,7 @@ export const projects: Project[] = [
   {
     "id": 37,
     "title": "Angles",
+    "artist": "Dan Le Sac vs Scroobius Pip",
     "timelineYear": 2008,
     "year": "2008",
     "role": "PRODUCTION · MIX",
@@ -793,6 +818,7 @@ export const projects: Project[] = [
   {
     "id": 38,
     "title": "Astronaut",
+    "artist": "Yila",
     "timelineYear": 2008,
     "role": "ARTIST · PRODUCER",
     "summary": "Yila release with Scroobius Pip and remixes by Clark and Dan Le Sac.",
@@ -811,6 +837,7 @@ export const projects: Project[] = [
   {
     "id": 39,
     "title": "Unknown Devices",
+    "artist": "David Toop",
     "timelineYear": 2007,
     "role": "ENSEMBLE MEMBER · PERFORMER",
     "summary": "David Toop’s improvisers orchestra at Tate, Barbican and South London Gallery.",
@@ -1187,6 +1214,8 @@ export const projects: Project[] = [
   {
     "id": 60,
     "title": "Leftfield — EU Tour",
+    "displayTitle": "EU Tour",
+    "artist": "Leftfield",
     "timelineYear": 2024,
     "role": "PLAYBACK TECHNICIAN",
     "summary": "Playback technician for Leftfield’s European live tour.",

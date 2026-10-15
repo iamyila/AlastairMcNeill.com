@@ -4,6 +4,8 @@ import { filters, projects as projectRecords } from '../data/projects';
 
 const projects = projectRecords.map((project) => ({
   ...project,
+  displayTitle: project.displayTitle ?? project.title.split(' — ')[0],
+  artist: project.artist ?? project.title.split(' — ').slice(1).join(' — '),
   slug: project.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
   image: `${import.meta.env.BASE_URL.replace(/\/$/, '')}${project.image}`,
   mediaFaces: [project.media.audio, project.media.video].filter(Boolean),
@@ -36,6 +38,12 @@ const projects = projectRecords.map((project) => ({
       </nav>
 
       <aside class="social-links" aria-label="Social links">
+        <a href="mailto:amcneillb@pm.me" aria-label="Email Alastair McNeill">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="1.5" y="3.5" width="21" height="17" rx="2"></rect>
+            <path d="m1.5 4.5 10.5 8 10.5-8"></path>
+          </svg>
+        </a>
         <a href="https://www.instagram.com/alastair_mcneill_/" target="_blank" rel="me noopener noreferrer" aria-label="Instagram">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <rect x="3" y="3" width="18" height="18" rx="5"></rect>
@@ -73,7 +81,10 @@ const projects = projectRecords.map((project) => ({
                 <img src={project.image} alt="" loading={project.id === 0 ? 'eager' : 'lazy'} fetchpriority={project.id === 0 ? 'high' : 'auto'} decoding="async" />
               </button>
               <button class="face right" type="button" data-action="media" data-media-count={project.mediaFaces.length} aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Project information for ${project.title}`}>
-                <strong>{project.title}</strong>
+                <strong>
+                  <span class="project-title">{project.displayTitle}</span>
+                  {project.artist && <span class="project-artist">{project.artist}</span>}
+                </strong>
                 <small>
                   {project.role.split(' · ').map((role) => (
                     <span>{role}</span>
