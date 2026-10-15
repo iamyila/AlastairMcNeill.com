@@ -42,6 +42,22 @@ export const filters: { id: Filter; label: string }[] = [
 
 export const projects: Project[] = [
   {
+    "id": 65,
+    "title": "In C — Tivoli In C Orchestra",
+    "timelineYear": 2025,
+    "year": "2025",
+    "role": "CONDUCTOR · ARTISTIC DIRECTION",
+    "summary": "Terry Riley’s In C at MGLC’s Summer in Tivoli, Plečnik Auditorium, Ljubljana, 13 June 2025.",
+    "categories": ["art", "music"],
+    "image": "/media/projects/in-c-tivoli-orchestra.jpg",
+    "media": {
+      "video": {
+        "provider": "youtube",
+        "src": "https://www.youtube-nocookie.com/embed/G43cgzZi4l8?rel=0&playsinline=1&controls=1"
+      }
+    }
+  },
+  {
     "id": 64,
     "title": "Emotional Tides — Kreda",
     "timelineYear": 2020,
