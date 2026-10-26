@@ -135,16 +135,29 @@ const projects = projectRecords.map((project) => ({
       let activeFilter = 'all';
       let pendingCubeLink = false;
 
-      function updateCubeLink(cube) {
+      function updateCubeLink(cube, position = 1) {
         const url = new URL(window.location.href);
-        url.hash = cube.id;
+        const slot = cube.querySelector(`.media-slot[data-position="${position}"]`);
+        const face = position === 2 ? 'info' : slot
+          ? (['youtube', 'vimeo'].includes(slot.dataset.provider) ? 'video' : 'audio')
+          : '';
+        url.hash = face ? `${cube.id}/${face}` : cube.id;
         window.history.replaceState(window.history.state, '', url);
       }
 
-      async function openCubeLink() {
-        let id;
-        try { id = decodeURIComponent(window.location.hash.slice(1)); }
+      function centreLinkedCube(animate = false) {
+        const cube = document.querySelector('.slice.is-linked-selected');
+        if (!cube || eventSignal.aborted) return;
+        const bounds = cube.getBoundingClientRect();
+        window.scrollTo({ top: window.scrollY + bounds.top - (window.innerHeight - bounds.height) / 2, behavior: animate && !reduceMotion ? 'smooth' : 'instant' });
+      }
+
+      async function openCubeLink(animate = false) {
+        let link;
+        try { link = decodeURIComponent(window.location.hash.slice(1)); }
         catch { return; }
+        const [id, face = 'cover', ...extra] = link.split('/');
+        if (extra.length || !['cover', 'info', 'audio', 'video'].includes(face)) return;
         const cube = cubes.find((item) => item.id === id);
         if (!cube) { pendingCubeLink = false; return; }
         if (isFiltering) { pendingCubeLink = true; return; }
@@ -158,14 +171,23 @@ const projects = projectRecords.map((project) => ({
           });
           await filterProjects('all');
           // A newer hash may have arrived while the grid was animating.
-          if (decodeURIComponent(window.location.hash.slice(1)) !== id) return;
+          if (decodeURIComponent(window.location.hash.slice(1)) !== link) return;
         }
         ensureProjectImage(cube);
         resetProjects();
         cube.classList.add('is-linked-selected');
         if (mobileLayout.matches) selectMobileCube(cube);
-        const bounds = cube.getBoundingClientRect();
-        window.scrollTo({ top: window.scrollY + bounds.top - (window.innerHeight - bounds.height) / 2, behavior: 'instant' });
+        // Resolve by provider: video may be the third or fourth cube face.
+        const slot = [...cube.querySelectorAll('.media-slot')].find((item) => {
+          const isVideo = ['youtube', 'vimeo'].includes(item.dataset.provider);
+          return face === 'video' ? isVideo : face === 'audio' && !isVideo;
+        });
+        const position = face === 'info' ? 2 : slot ? Number(slot.dataset.position) : 1;
+        if (position > 1) setCubePosition(cube, position);
+        else updateCubeLink(cube);
+        if (!animate) centreLinkedCube();
+        // Reconcile after layout/scroll anchoring has applied the enlarged row.
+        requestAnimationFrame(() => requestAnimationFrame(() => centreLinkedCube(animate)));
       }
 
       function clearSlot(slot) {
@@ -288,7 +310,7 @@ const projects = projectRecords.map((project) => ({
         return true;
       }
 
-      function resetCube(cube) {
+      function resetCube(cube, updateLink = false) {
         window.clearTimeout(mediaLoadTimers.get(cube));
         window.clearTimeout(interactionTimers.get(cube));
         mediaLoadTimers.delete(cube);
@@ -296,6 +318,7 @@ const projects = projectRecords.map((project) => ({
         lockedCubes.delete(cube);
         cube.classList.remove(...positions, 'is-atmos', 'is-mobile-selected', 'is-linked-selected');
         clearCubeMedia(cube);
+        if (updateLink) updateCubeLink(cube);
       }
 
       function advanceMedia(cube) {
@@ -303,7 +326,7 @@ const projects = projectRecords.map((project) => ({
           && cube.querySelector('.media-slot[data-position="4"]')) {
           setCubePosition(cube, 4);
         } else {
-          resetCube(cube);
+          resetCube(cube, true);
         }
       }
 
@@ -319,7 +342,7 @@ const projects = projectRecords.map((project) => ({
       }
 
       function resetProjects() {
-        cubes.forEach(resetCube);
+        cubes.forEach((cube) => resetCube(cube));
       }
 
       // Isolated handoff for direct-link enlargement; ordinary selection stays unchanged.
@@ -607,7 +630,7 @@ const projects = projectRecords.map((project) => ({
       }
 
       function setCubePosition(cube, position) {
-        updateCubeLink(cube);
+        updateCubeLink(cube, position);
         cubes.forEach((item) => { if (item !== cube) resetCube(item); });
         window.clearTimeout(mediaLoadTimers.get(cube));
         // Keep the already-loading iframe attached during info -> audio only.
@@ -800,7 +823,7 @@ const projects = projectRecords.map((project) => ({
             && !Number(info.dataset.mediaCount)
             && target.closest('.right')) {
             event.stopPropagation();
-            resetCube(cube);
+            resetCube(cube, true);
             return;
           }
           if (cube.classList.contains('is-media-2')) {
@@ -820,7 +843,7 @@ const projects = projectRecords.map((project) => ({
           if (Number(info.dataset.mediaCount)) {
             setCubePosition(cube, 3);
           } else {
-            resetCube(cube);
+            resetCube(cube, true);
           }
         }, { signal: eventSignal });
         mediaAdvance?.addEventListener('click', () => {
@@ -828,7 +851,7 @@ const projects = projectRecords.map((project) => ({
           if (Number(info.dataset.mediaCount)) {
             setCubePosition(cube, 3);
           } else {
-            resetCube(cube);
+            resetCube(cube, true);
           }
         }, { signal: eventSignal });
         const firstMediaFace = cube.querySelector('.media-face[data-position="3"]');
@@ -840,6 +863,7 @@ const projects = projectRecords.map((project) => ({
       });
 
       window.addEventListener('resize', () => {
+        centreLinkedCube();
         document.querySelectorAll('.audio-overlay').forEach((player) => {
           if (player instanceof HTMLElement) alignAudioOverlay(player);
         });
@@ -854,7 +878,13 @@ const projects = projectRecords.map((project) => ({
         resetProjects();
       }, { capture: true, signal: eventSignal });
 
-      window.addEventListener('hashchange', openCubeLink, { signal: eventSignal });
+      window.addEventListener('hashchange', () => openCubeLink(true), { signal: eventSignal });
+      window.addEventListener('load', () => {
+        requestAnimationFrame(() => centreLinkedCube());
+      }, { once: true, signal: eventSignal });
+      document.fonts.ready.then(() => {
+        if (!eventSignal.aborted) requestAnimationFrame(() => centreLinkedCube());
+      });
       openCubeLink();
     </script>
   </body>
