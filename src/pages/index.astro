@@ -11,7 +11,8 @@ const projects = projectRecords.map((project) => ({
   mediaFaces: [project.media.audio, project.media.video].filter(Boolean),
 })).sort((left, right) => {
   const yearDifference = right.timelineYear - left.timelineYear;
-  return yearDifference || left.id - right.id;
+  const dateDifference = (right.timelineDate ?? '').localeCompare(left.timelineDate ?? '');
+  return yearDifference || dateDifference || left.id - right.id;
 });
 ---
 
@@ -78,7 +79,7 @@ const projects = projectRecords.map((project) => ({
           return <article id={project.slug} class="slice" data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
             <div class="slab">
               <button class="face front" type="button" data-action="info" aria-label={`Show information for ${project.title}`}>
-                <img src={project.image} alt="" loading={project.id === 0 ? 'eager' : 'lazy'} fetchpriority={project.id === 0 ? 'high' : 'auto'} decoding="async" />
+                <img src={project.image} alt="" style={project.imageFit === 'contain' ? 'object-fit:contain;background:#151515' : undefined} loading={project.id === 0 ? 'eager' : 'lazy'} fetchpriority={project.id === 0 ? 'high' : 'auto'} decoding="async" />
               </button>
               <button class="face right" type="button" data-action="media" data-media-count={project.mediaFaces.length} aria-label={project.mediaFaces.length ? `Show media for ${project.title}` : `Project information for ${project.title}`}>
                 <strong>

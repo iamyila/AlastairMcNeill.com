@@ -1,5 +1,15 @@
 # Artwork sources
 
+## Capacity to Be Addressed — Mauricio Valdés San Emeterio
+
+- Artwork: the 1080 × 1440 Globina prostora poster supplied by the user, first slide in the [Forum nove glasbe event post](https://www.instagram.com/p/DfCWL-Piglx/?img_index=1).
+- Original file: 871056872_18121202516471478_5960498477004197116_n.jpg
+- Production credits: https://www.pina.si/opereta-v-kateri-glasba-prihaja-od-drugod-premiera-dela-naslavljanje-zmogljivosti-na-novem-glasbenem-forumu/
+- Festival programme: https://ljnmf.org/en/festival-2026-en/program/
+- Previous dark artwork: https://www.pina.si/wp-content/uploads/2026/11/Globina-prostora.jpg
+- Local file: public/media/projects/capacity-to-be-addressed.jpg
+- Copied unchanged and fitted on a dark background so the square face does not crop the lettering. Rights remain with the original rights holder.
+
 ## In C — Tivoli In C Orchestra
 
 - Added: 2026-10-15, at the user's request.

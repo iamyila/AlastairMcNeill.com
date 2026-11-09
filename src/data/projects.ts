@@ -7,11 +7,13 @@ export type Project = {
   displayTitle?: string;
   artist?: string;
   timelineYear: number;
+  timelineDate?: string; // YYYY-MM-DD or YYYY-MM, when known.
   year?: string;
   role: string;
   summary: string;
   categories: Filter[];
   image: string;
+  imageFit?: 'contain';
   media: { audio?: Media; video?: Media };
 };
 
@@ -44,9 +46,24 @@ export const filters: { id: Filter; label: string }[] = [
 
 export const projects: Project[] = [
   {
+    "id": 66,
+    "title": "Capacity to Be Addressed",
+    "artist": "Mauricio Valdés San Emeterio",
+    "timelineYear": 2026,
+    "timelineDate": "2026-11-06",
+    "year": "2026",
+    "role": "SPOKEN WORD / POETRY",
+    "summary": "PiNA’s three-act spatial operetta. Contributed spoken word / poetry.",
+    "categories": ["art", "music"],
+    "image": "/media/projects/capacity-to-be-addressed.jpg",
+    "imageFit": "contain",
+    "media": {}
+  },
+  {
     "id": 65,
     "title": "In C — Tivoli In C Orchestra",
     "timelineYear": 2025,
+    "timelineDate": "2025-06-13",
     "year": "2025",
     "role": "CONDUCTOR · ARTISTIC DIRECTION",
     "summary": "Terry Riley’s In C at MGLC’s Summer in Tivoli, Plečnik Auditorium, Ljubljana, 13 June 2025.",
@@ -63,6 +80,7 @@ export const projects: Project[] = [
     "id": 64,
     "title": "Emotional Tides — Kreda",
     "timelineYear": 2020,
+    "timelineDate": "2020-01-24",
     "role": "WRITER · PRODUCER · MIX",
     "summary": "Kreda’s first single: music composed to Atej Tutta’s Venetian visuals, using binaural and ambisonic techniques.",
     "categories": ["art", "music", "production"],
@@ -78,6 +96,7 @@ export const projects: Project[] = [
     "id": 0,
     "title": "The Land We Knew the Best — Chris Eckman",
     "timelineYear": 2025,
+    "timelineDate": "2025-01-24",
     "year": "2025",
     "role": "PRODUCER · ENGINEER · INSTRUMENTATION",
     "summary": "Chris Eckman’s seventh solo album for Glitterhouse.",
@@ -101,6 +120,7 @@ export const projects: Project[] = [
     "id": 1,
     "title": "Intention, Intensity, Shuffle — Zhlehtet",
     "timelineYear": 2026,
+    "timelineDate": "2026-06-05",
     "year": "2026",
     "role": "MASTERING",
     "summary": "Rok Zalokar and Zhlehtet’s 21-track musical diary.",
@@ -121,6 +141,7 @@ export const projects: Project[] = [
     "title": "Dysfunctional Combinations and Collaborations, Vol. 2",
     "artist": "Yila",
     "timelineYear": 2021,
+    "timelineDate": "2021-04-16",
     "year": "2021",
     "role": "PRODUCER · MIX · COMPOSITION",
     "summary": "Yila’s collaborative, dance-floor-facing second volume.",
@@ -145,6 +166,7 @@ export const projects: Project[] = [
     "title": "Where the Spirit rests",
     "artist": "Chris Eckman",
     "timelineYear": 2021,
+    "timelineDate": "2021-06-04",
     "year": "2021",
     "role": "CO-PRODUCER · RECORDING · MIX",
     "summary": "Chris Eckman’s German Record Critics’ Award-winning album.",
@@ -210,6 +232,7 @@ export const projects: Project[] = [
     "id": 6,
     "title": "Crest — Kreda",
     "timelineYear": 2020,
+    "timelineDate": "2020-02-07",
     "role": "WRITER · PRODUCER · MIX",
     "summary": "Kreda’s experimental pop collaboration with Mina Špiler, Matevž Kolenc and Atej Tutta.",
     "categories": [
@@ -303,6 +326,7 @@ export const projects: Project[] = [
     "title": "Better (of) me",
     "artist": "Yila & Mina Špiler",
     "timelineYear": 2018,
+    "timelineDate": "2018-02-23",
     "year": "2018",
     "role": "WRITER · PRODUCER · MIX",
     "summary": "Yila and Mina Špiler EP with Dave DK, Rose Tinted and Alleged Witches remixes.",
@@ -474,7 +498,8 @@ export const projects: Project[] = [
     "id": 19,
     "title": "Overload",
     "artist": "Yila",
-    "timelineYear": 2015,
+    "timelineYear": 2016,
+    "timelineDate": "2016-01-27",
     "role": "ARTIST · PRODUCER",
     "summary": "Yila EP for Silver Bear / Sunday Best with video and remixes.",
     "categories": [
@@ -723,6 +748,7 @@ export const projects: Project[] = [
     "title": "Distraction Pieces",
     "artist": "Scroobius Pip",
     "timelineYear": 2011,
+    "timelineDate": "2011-09-20",
     "year": "2011",
     "role": "EXECUTIVE PRODUCER · MIX ENGINEER",
     "summary": "Scroobius Pip’s solo album for Speech Development and Strange Famous Records.",
@@ -874,6 +900,7 @@ export const projects: Project[] = [
     "id": 41,
     "title": "The Only Thing I Know — Žigan & Kristijan Krajnčan",
     "timelineYear": 2026,
+    "timelineDate": "2026-05-04",
     "year": "2026",
     "role": "MASTERING",
     "summary": "Complete debut album by Žigan and Kristijan Krajnčan.",
@@ -888,6 +915,7 @@ export const projects: Project[] = [
     "id": 42,
     "title": "Poletje Loops — Zhlehtet",
     "timelineYear": 2023,
+    "timelineDate": "2023-06-09",
     "year": "2023",
     "role": "MASTERING",
     "summary": "Zhlehtet’s live creative return, documented across summer 2022.",
@@ -907,6 +935,7 @@ export const projects: Project[] = [
     "id": 43,
     "title": "Portals Vol. 2 — Zhlehtet",
     "timelineYear": 2023,
+    "timelineDate": "2023-11-17",
     "year": "2023",
     "role": "MASTERING",
     "summary": "Zhlehtet live in a single room at Cankarjev dom, Vrhnika.",
@@ -926,6 +955,7 @@ export const projects: Project[] = [
     "id": 44,
     "title": "Vrt — Zhlehtet",
     "timelineYear": 2024,
+    "timelineDate": "2024-05-03",
     "year": "2024",
     "role": "MASTERING",
     "summary": "Zhlehtet’s ambient, improvised Vrt release.",
@@ -945,6 +975,7 @@ export const projects: Project[] = [
     "id": 45,
     "title": "Faded Worlds Suite — Zhlehtet",
     "timelineYear": 2025,
+    "timelineDate": "2025-04-27",
     "year": "2025",
     "role": "MASTERING",
     "summary": "Zhlehtet’s live suite of written and spontaneous composition.",
@@ -964,6 +995,7 @@ export const projects: Project[] = [
     "id": 46,
     "title": "Pieces for Collective Change — Rok Zalokar & Zhlehtet",
     "timelineYear": 2025,
+    "timelineDate": "2025-11-28",
     "year": "2025",
     "role": "MASTERING",
     "summary": "Jazz Cerkno Records album by Rok Zalokar & Zhlehtet.",
@@ -983,6 +1015,7 @@ export const projects: Project[] = [
     "id": 47,
     "title": "A Plea for Tenderness — Lenart De Bock",
     "timelineYear": 2025,
+    "timelineDate": "2025-09",
     "year": "2025",
     "role": "MASTERING",
     "summary": "Lenart De Bock’s debut solo album, released by Jazz Cerkno Records.",
@@ -1002,6 +1035,7 @@ export const projects: Project[] = [
     "id": 48,
     "title": "SO.UND.ING Acousmonium INput",
     "timelineYear": 2026,
+    "timelineDate": "2026-03-17",
     "year": "2026",
     "role": "LIVE SPATIAL PERFORMANCE",
     "summary": "Original work in Cona and Kino Šiška’s octophonic festival of live spatial sound.",
@@ -1030,6 +1064,7 @@ export const projects: Project[] = [
     "id": 50,
     "title": "Sound Explicit 2024",
     "timelineYear": 2024,
+    "timelineDate": "2024-09-17",
     "year": "2024",
     "role": "SOLO PERFORMER · SPATIAL SOUND",
     "summary": "Electric cello, hexaphonic guitar tuner and guitar amplifiers spatialised across Cukrarna.",
@@ -1063,7 +1098,8 @@ export const projects: Project[] = [
   {
     "id": 52,
     "title": "Separate — Aloosh",
-    "timelineYear": 2009,
+    "timelineYear": 2010,
+    "timelineDate": "2010-10-18",
     "role": "PRODUCER · MIX",
     "summary": "Limited 7-inch single for Nature Scene Records.",
     "categories": [
@@ -1086,6 +1122,7 @@ export const projects: Project[] = [
     "id": 53,
     "title": "Ceramic — Aloosh",
     "timelineYear": 2012,
+    "timelineDate": "2012-11-26",
     "role": "ARTIST · PRODUCER · MIX",
     "summary": "Aloosh’s eight-track debut album for Nature Scene Records.",
     "categories": [
@@ -1144,6 +1181,7 @@ export const projects: Project[] = [
     "id": 56,
     "title": "Another Breakup — Aloosh",
     "timelineYear": 2022,
+    "timelineDate": "2022-08-13",
     "year": "2022",
     "role": "ARTIST · PRODUCER · MIX",
     "summary": "Aloosh’s 2022 release, bringing together Waiting, Hold On and Servant.",
@@ -1182,6 +1220,7 @@ export const projects: Project[] = [
     "id": 58,
     "title": "Gugutke — Gugutke",
     "timelineYear": 2025,
+    "timelineDate": "2025-10-02",
     "year": "2025",
     "role": "MASTERING",
     "summary": "Gugutke’s self-titled debut album for Celinka.si.",
@@ -1196,6 +1235,7 @@ export const projects: Project[] = [
     "id": 59,
     "title": "Run After Boyz — Chewy She",
     "timelineYear": 2022,
+    "timelineDate": "2022-11-05",
     "year": "2022",
     "role": "PRE-PRODUCTION",
     "summary": "Chewy She’s Run After Boyz release.",
