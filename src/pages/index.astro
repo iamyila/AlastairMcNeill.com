@@ -681,10 +681,10 @@ const projects = projectRecords.map((project) => ({
           { opacity: 1, transform: 'translate3d(0, 0, 0) scale(1)' },
           { opacity: 0, transform: 'translate3d(0, 1.15rem, 0) scale(.9)' },
         ], 150)));
-        exiting.forEach((cube) => { cube.hidden = true; });
-
         const retained = cubes.filter((cube) => !cube.hidden && nextVisible.has(cube));
+        // Capture the old positions before removing the cubes that hold those grid slots.
         const before = new Map(retained.map((cube) => [cube, cube.getBoundingClientRect()]));
+        exiting.forEach((cube) => { cube.hidden = true; });
         const entering = [...nextVisible].filter((cube) => cube.hidden);
         entering.forEach((cube) => {
           cube.hidden = false;
