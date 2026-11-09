@@ -1,0 +1,94 @@
+name: Deploy to OrangeWebsite
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the site after the FTPS test passes
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: orangewebsite
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || vars.ORANGE_AUTO_DEPLOY == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        if: github.event_name == 'push' || inputs.publish
+        with:
+          node-version: 22
+          cache: npm
+      - name: Build site for the domain root
+        if: github.event_name == 'push' || inputs.publish
+        run: |
+          npm ci
+          npm run build
+        env:
+          GITHUB_PAGES: 'false'
+      - name: Install FTPS client
+        run: sudo apt-get update && sudo apt-get install -y lftp
+      - name: Test FTPS and publish if requested
+        env:
+          FTPS_HOST: ${{ vars.ORANGE_FTPS_HOST }}
+          FTPS_USER: ${{ secrets.ORANGE_FTPS_USER }}
+          LFTP_PASSWORD: ${{ secrets.ORANGE_FTPS_PASSWORD }}
+          PUBLISH: ${{ github.event_name == 'push' || inputs.publish == true }}
+        shell: bash
+        run: |
+          if [[ ! "$FTPS_HOST" =~ ^[a-zA-Z0-9.-]+$ || ! "$FTPS_USER" =~ ^[a-zA-Z0-9_.+@-]+$ || -z "$LFTP_PASSWORD" ]]; then
+            echo 'Set ORANGE_FTPS_HOST, ORANGE_FTPS_USER and ORANGE_FTPS_PASSWORD in GitHub Actions settings.' >&2
+            exit 1
+          fi
+
+          ftps() {
+            lftp --norc -c "
+              set cmd:fail-exit yes
+              set net:timeout 15s
+              set net:max-retries 2
+              set ftp:ssl-force yes
+              set ftp:ssl-protect-data yes
+              set ftp:ssl-protect-list yes
+              set ssl:verify-certificate yes
+              set xfer:use-temp-file yes
+              open --user '$FTPS_USER' --env-password ftp://$FTPS_HOST:21
+              $1
+            "
+          }
+
+          probe="deployment-check-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.txt"
+          printf 'FTPS test\n' > "$probe"
+          ftps "put '$probe'"
+          trap 'ftps "rm $probe"' EXIT
+
+          # Exercise replacing a file and verify the FTP root serves the portfolio.
+          printf 'Verified deployment %s\n' "$probe" > "$probe"
+          ftps "put '$probe'"
+          curl --fail --silent --show-error --max-time 30 "https://alastairmcneill.com/$probe" -o probe-response.txt
+          cmp "$probe" probe-response.txt
+          ftps "rm '$probe'"
+          trap - EXIT
+          echo 'FTPS upload, replacement and HTTPS verification passed.'
+
+          if [[ "$PUBLISH" == 'true' ]]; then
+            # Upload assets first and replace the homepage after they are available.
+            ftps 'set mirror:overwrite yes
+              mirror --reverse --no-perms --exclude-glob index.html dist/ ./
+              put dist/index.html -o index.html'
+            curl --fail --silent --show-error --max-time 30 \
+              "https://alastairmcneill.com/?deploy=$GITHUB_SHA" -o published-index.html
+            cmp dist/index.html published-index.html
+            echo 'Published and verified the live homepage.'
+          fi
