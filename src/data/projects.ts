@@ -46,6 +46,24 @@ export const filters: { id: Filter; label: string }[] = [
 
 export const projects: Project[] = [
   {
+    "id": 67,
+    "title": "Democracy — Margaret Atwood",
+    "artist": "Margaret Atwood / Financial Times",
+    "timelineYear": 2024,
+    "timelineDate": "2024-01-17",
+    "year": "2024",
+    "role": "SOUND DESIGN",
+    "summary": "Margaret Atwood’s animated monologue for the Financial Times’ Democracy 2024 film series.",
+    "categories": ["commercial", "production"],
+    "image": "/media/projects/ft-democracy.svg",
+    "media": {
+      "video": {
+        "provider": "youtube",
+        "src": "https://www.youtube-nocookie.com/embed/pFkxJSCzjcw?rel=0&playsinline=1&controls=1"
+      }
+    }
+  },
+  {
     "id": 66,
     "title": "Capacity to Be Addressed",
     "artist": "Mauricio Valdés San Emeterio",
