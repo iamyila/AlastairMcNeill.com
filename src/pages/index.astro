@@ -2,12 +2,14 @@
 import '../styles/global.css';
 import { filters, projects as projectRecords } from '../data/projects';
 
+const initialFilter = Astro.props.category ?? 'all';
+const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 const projects = projectRecords.map((project) => ({
   ...project,
   displayTitle: project.displayTitle ?? project.title.split(' — ')[0],
   artist: project.artist ?? project.title.split(' — ').slice(1).join(' — '),
   slug: project.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
-  image: `${import.meta.env.BASE_URL.replace(/\/$/, '')}${project.image}`,
+  image: `${basePath}${project.image}`,
   mediaFaces: [project.media.audio, project.media.video].filter(Boolean),
 })).sort((left, right) => {
   const yearDifference = right.timelineYear - left.timelineYear;
@@ -25,11 +27,11 @@ const projects = projectRecords.map((project) => ({
     <title>Alastair McNeill / Yila</title>
   </head>
   <body>
-    <main class="project-field" aria-label="Alastair McNeill project archive">
+    <main data-initial-filter={initialFilter} data-base-path={basePath} class="project-field" aria-label="Alastair McNeill project archive">
       <nav class="filter-nav" aria-label="Filter projects">
         {filters.map(({ id, label }) => {
           const filterProjects = id === 'all' ? projects : projects.filter((project) => project.categories.includes(id));
-          return <button class={`filter-cube filter-${id}${id === 'all' ? ' is-active' : ''}`} type="button" data-filter={id} aria-pressed={id === 'all' ? 'true' : 'false'} aria-label={`Show ${filterProjects.length} ${label.toLowerCase()} projects`}>
+          return <button class={`filter-cube filter-${id}${id === initialFilter ? ' is-active' : ''}`} type="button" data-filter={id} aria-pressed={id === initialFilter ? 'true' : 'false'} aria-label={`Show ${filterProjects.length} ${label.toLowerCase()} projects`}>
             <span class="filter-count" aria-hidden="true">
               {filterProjects.map((project) => <i style={`background-image: url(${project.image})`}></i>)}
             </span>
@@ -76,7 +78,7 @@ const projects = projectRecords.map((project) => ({
           const audioOverlays = project.mediaFaces
             .map((media, index) => ({ media, position: index + 3 }))
             .filter(({ media }) => ['bandcamp', 'soundcloud'].includes(media.provider));
-          return <article id={project.slug} class="slice" data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
+          return <article id={project.slug} class="slice" hidden={initialFilter !== 'all' && !project.categories.includes(initialFilter)} data-project={project.id} data-categories={project.categories.join(' ')} data-atmos={firstMedia?.provider === 'atmos' ? 'true' : 'false'}>
             <div class="slab">
               <button class="face front" type="button" data-action="info" aria-label={`Show information for ${project.title}`}>
                 <img src={project.image} alt="" style={project.imageFit === 'contain' ? 'object-fit:contain;background:#151515' : undefined} loading={project.id === 0 ? 'eager' : 'lazy'} fetchpriority={project.id === 0 ? 'high' : 'auto'} decoding="async" />
@@ -133,8 +135,36 @@ const projects = projectRecords.map((project) => ({
       const lockedCubes = new WeakSet();
       const mobileLayout = window.matchMedia('(max-width: 540px)');
       let isFiltering = false;
-      let activeFilter = 'all';
+      let activeFilter = main.dataset.initialFilter;
+      let pendingCategoryRoute = false;
       let pendingCubeLink = false;
+
+      function categoryPath(filter) {
+        return `${main.dataset.basePath}/${filter === 'all' ? '' : filter}`;
+      }
+
+      function selectFilter(filter) {
+        activeFilter = filter;
+        document.querySelectorAll('[data-filter]').forEach((button) => {
+          const selected = button.dataset.filter === filter;
+          button.classList.toggle('is-active', selected);
+          button.setAttribute('aria-pressed', String(selected));
+        });
+      }
+
+      async function openCategoryRoute() {
+        if (isFiltering) { pendingCategoryRoute = true; return; }
+        pendingCategoryRoute = false;
+        const path = window.location.pathname.replace(/\/$/, '');
+        const filter = [...document.querySelectorAll('[data-filter]')]
+          .map((button) => button.dataset.filter)
+          .find((filter) => categoryPath(filter).replace(/\/$/, '') === path) ?? 'all';
+        if (filter !== activeFilter) {
+          selectFilter(filter);
+          await filterProjects(filter);
+        }
+        if (window.location.hash) await openCubeLink(true);
+      }
 
       function updateCubeLink(cube, position = 1) {
         const url = new URL(window.location.href);
@@ -164,12 +194,10 @@ const projects = projectRecords.map((project) => ({
         if (isFiltering) { pendingCubeLink = true; return; }
         pendingCubeLink = false;
         if (cube.hidden) {
-          activeFilter = 'all';
-          document.querySelectorAll('[data-filter]').forEach((button) => {
-            const selected = button.dataset.filter === 'all';
-            button.classList.toggle('is-active', selected);
-            button.setAttribute('aria-pressed', String(selected));
-          });
+          selectFilter('all');
+          const url = new URL(window.location.href);
+          url.pathname = categoryPath('all');
+          window.history.replaceState(window.history.state, '', url);
           await filterProjects('all');
           // A newer hash may have arrived while the grid was animating.
           if (decodeURIComponent(window.location.hash.slice(1)) !== link) return;
@@ -709,23 +737,20 @@ const projects = projectRecords.map((project) => ({
 
         await Promise.all([...moves, ...arrivals]);
         isFiltering = false;
-        if (pendingCubeLink) openCubeLink();
+        if (pendingCategoryRoute) openCategoryRoute();
+        else if (pendingCubeLink) openCubeLink();
       }
 
       document.querySelector('.filter-nav').addEventListener('click', (event) => {
         const filterButton = event.target.closest('[data-filter]');
         if (!filterButton || isFiltering) return;
-        const url = new URL(window.location.href);
-        url.hash = '';
-        window.history.replaceState(window.history.state, '', url);
         const requestedFilter = filterButton.dataset.filter;
         const nextFilter = requestedFilter === activeFilter && requestedFilter !== 'all' ? 'all' : requestedFilter;
-        document.querySelectorAll('[data-filter]').forEach((button) => {
-          const isActive = button.dataset.filter === nextFilter;
-          button.classList.toggle('is-active', isActive);
-          button.setAttribute('aria-pressed', String(isActive));
-        });
-        activeFilter = nextFilter;
+        const url = new URL(window.location.href);
+        url.pathname = categoryPath(nextFilter);
+        url.hash = '';
+        window.history.pushState(window.history.state, '', url);
+        selectFilter(nextFilter);
         filterProjects(nextFilter);
       }, { signal: eventSignal });
 
@@ -879,6 +904,7 @@ const projects = projectRecords.map((project) => ({
         resetProjects();
       }, { capture: true, signal: eventSignal });
 
+      window.addEventListener('popstate', openCategoryRoute, { signal: eventSignal });
       window.addEventListener('hashchange', () => openCubeLink(true), { signal: eventSignal });
       window.addEventListener('load', () => {
         requestAnimationFrame(() => centreLinkedCube());

@@ -1,0 +1,14 @@
+---
+import Archive from './index.astro';
+import { filters } from '../data/projects';
+
+export function getStaticPaths() {
+  return filters.filter(({ id }) => id !== 'all').map(({ id }) => ({
+    params: { category: id },
+    props: { category: id },
+  }));
+}
+
+const { category } = Astro.props;
+---
+<Archive category={category} />
